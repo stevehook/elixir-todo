@@ -7,8 +7,11 @@ defmodule Todo.TaskControllerTest do
     tasks_as_json =
       %Task{title: "Walk the dog"}
       |> Repo.insert
+      |> Tuple.to_list
+      |> List.last
       |> List.wrap
       |> Poison.encode!
+      |> Poison.decode!
 
     conn = get conn, "/api/tasks"
 

@@ -5,6 +5,8 @@ defmodule Todo.TasksController do
 
   def index(conn, _params) do
     tasks = Repo.all(Task)
-    render conn, tasks: tasks
+    conn
+      |> put_status(200)
+      |> json(tasks)
   end
 end

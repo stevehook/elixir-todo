@@ -25,4 +25,13 @@ defmodule Todo.Task do
     model
     |> cast(params, @required_fields, @optional_fields)
   end
+
+  defimpl Poison.Encoder, for: Todo.Task do
+    def encode(task, _options) do
+      task
+      |> Map.from_struct
+      |> Map.drop([:__meta__, :__struct__])
+      |> Poison.encode!
+    end
+  end
 end
