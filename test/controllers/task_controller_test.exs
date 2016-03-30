@@ -12,6 +12,6 @@ defmodule Todo.TaskControllerTest do
 
     conn = get conn, "/api/tasks"
 
-    assert html_response(conn, 200) == tasks_as_json
+    assert json_response(conn, 200) == tasks_as_json
   end
 end
