@@ -4,17 +4,14 @@ defmodule Todo.TaskControllerTest do
   alias Todo.Repo
 
   test "/index returns a list of tasks" do
-    tasks_as_json =
-      %Task{title: "Walk the dog"}
+    { :ok, task } = %Task{title: "Walk the dog"}
       |> Repo.insert
-      |> Tuple.to_list
-      |> List.last
+    tasks_as_json = task
       |> List.wrap
       |> Poison.encode!
-      |> Poison.decode!
 
     conn = get conn, "/api/tasks"
 
-    assert json_response(conn, 200) == tasks_as_json
+    assert response(conn, 200) == tasks_as_json
   end
 end
