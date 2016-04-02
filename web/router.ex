@@ -24,5 +24,6 @@ defmodule Todo.Router do
   scope "/api", Todo do
     pipe_through :api
     get "/tasks", TasksController, :index
+    get "/tasks/:id", TasksController, :show
   end
 end

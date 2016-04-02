@@ -9,4 +9,11 @@ defmodule Todo.TasksController do
       |> put_status(200)
       |> json(tasks)
   end
+
+  def show(conn, %{"id" => id}) do
+    task = Repo.get!(Task, id)
+    conn
+      |> put_status(200)
+      |> json(task)
+  end
 end
