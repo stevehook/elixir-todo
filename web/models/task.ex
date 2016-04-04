@@ -12,8 +12,8 @@ defmodule Todo.Task do
     timestamps
   end
 
-  @required_fields ~w(title completed complete_by order archived_at user_id)
-  @optional_fields ~w()
+  @required_fields ~w(title completed)
+  @optional_fields ~w(complete_by order archived_at user_id)
 
   @doc """
   Creates a changeset based on the `model` and `params`.

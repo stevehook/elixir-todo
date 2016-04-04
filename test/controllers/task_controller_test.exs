@@ -31,12 +31,12 @@ defmodule Todo.TaskControllerTest do
 
   test "POST /api/tasks creates a new task" do
     task_as_json = %{ "task" => %Task{title: "Walk the dog"} }
-    |> Poison.encode!
+    |> Poison.encode!()
 
     conn = conn
     |> put_req_header("content-type", "application/json")
-    |> post "/api/tasks", task_as_json
+    |> post("/api/tasks", task_as_json)
 
-    assert response(conn, 201) == 'foo'
+    assert json_response(conn, 201) == %{ "title" => "Walk the dog" }
   end
 end
