@@ -39,4 +39,15 @@ defmodule Todo.TaskControllerTest do
 
     assert %{ "title" => "Walk the dog" } = json_response(conn, 201)
   end
+
+  test "POST /api/tasks fails with an error message if we try to create a new task without a title" do
+    task_as_json = %{ "task" => %Task{} }
+    |> Poison.encode!()
+
+    conn = conn
+    |> put_req_header("content-type", "application/json")
+    |> post("/api/tasks", task_as_json)
+
+    assert json_response(conn, 422)
+  end
 end
