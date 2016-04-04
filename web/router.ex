@@ -25,5 +25,6 @@ defmodule Todo.Router do
     pipe_through :api
     get "/tasks", TasksController, :index
     get "/tasks/:id", TasksController, :show
+    post "/tasks", TasksController, :create
   end
 end
