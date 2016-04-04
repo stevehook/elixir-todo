@@ -37,6 +37,6 @@ defmodule Todo.TaskControllerTest do
     |> put_req_header("content-type", "application/json")
     |> post("/api/tasks", task_as_json)
 
-    assert json_response(conn, 201) == %{ "title" => "Walk the dog" }
+    assert %{ "title" => "Walk the dog" } = json_response(conn, 201)
   end
 end
