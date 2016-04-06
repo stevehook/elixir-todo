@@ -63,4 +63,16 @@ defmodule Todo.TaskControllerTest do
     task = Repo.get!(Task, task.id)
     assert task.title == "Wash the car"
   end
+
+  test "DELETE /api/tasks/:id deletes an existing task" do
+    task = create_task
+
+    conn = conn
+    |> put_req_header("content-type", "application/json")
+    |> delete("/api/tasks/#{task.id}")
+
+    assert json_response(conn, 200)
+    task = Repo.get!(Task, task.id)
+    assert task == nil
+  end
 end
