@@ -50,4 +50,15 @@ defmodule Todo.TaskControllerTest do
 
     assert %{ "errors" => %{ "title" => "can't be blank" } } = json_response(conn, 422)
   end
+
+  test "PATCH /api/tasks/:id updates an existing task" do
+    task = create_task
+    task_as_json = %{ "task" => %Task{title: "Wash the car"} }
+
+    conn = conn
+    |> put_req_header("content-type", "application/json")
+    |> patch("/api/tasks/#{task.id}", task_as_json)
+
+    assert %{ "title" => "Wash the car" } = json_response(conn, 200)
+  end
 end
