@@ -48,6 +48,6 @@ defmodule Todo.TaskControllerTest do
     |> put_req_header("content-type", "application/json")
     |> post("/api/tasks", task_as_json)
 
-    assert json_response(conn, 422)
+    assert %{ "errors" => %{ "title" => "can't be blank" } } = json_response(conn, 422)
   end
 end

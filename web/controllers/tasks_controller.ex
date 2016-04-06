@@ -19,16 +19,16 @@ defmodule Todo.TasksController do
 
   def create(conn, %{"task" => task_params}) do
     changeset = Task.changeset(%Task{}, task_params)
-    # TODO: How best to handle errors properly here?
     case Repo.insert(changeset) do
       {:ok, task} ->
         conn
         |> put_status(201)
         |> json(task)
-      {:error, message} ->
+      {:error, changeset} ->
+        errors = changeset.errors |> Enum.into(%{})
         conn
         |> put_status(422)
-        |> json(%{ message: "something went wrong" })
+        |> json(%{ "errors" => errors })
     end
   end
 end
