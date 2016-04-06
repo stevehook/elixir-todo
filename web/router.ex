@@ -23,10 +23,6 @@ defmodule Todo.Router do
   # Other scopes may use custom stacks.
   scope "/api", Todo do
     pipe_through :api
-    get "/tasks", TasksController, :index
-    get "/tasks/:id", TasksController, :show
-    patch "/tasks/:id", TasksController, :update
-    post "/tasks", TasksController, :create
-    delete "/tasks/:id", TasksController, :delete
+    resources "/tasks", TasksController
   end
 end
