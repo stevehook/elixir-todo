@@ -72,7 +72,7 @@ defmodule Todo.TaskControllerTest do
     |> delete("/api/tasks/#{task.id}")
 
     assert json_response(conn, 200)
-    task = Repo.get!(Task, task.id)
+    task = Repo.get(Task, task.id)
     assert task == nil
   end
 end

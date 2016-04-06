@@ -27,5 +27,6 @@ defmodule Todo.Router do
     get "/tasks/:id", TasksController, :show
     patch "/tasks/:id", TasksController, :update
     post "/tasks", TasksController, :create
+    delete "/tasks/:id", TasksController, :delete
   end
 end
