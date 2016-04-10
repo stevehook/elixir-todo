@@ -4,13 +4,14 @@ defmodule Todo.User do
   schema "users" do
     field :name, :string
     field :email, :string
+    field :password, :string
     field :deleted, :boolean, default: false
     field :last_logged_in_at, Ecto.DateTime
 
     timestamps
   end
 
-  @required_fields ~w(name email deleted last_logged_in_at)
+  @required_fields ~w(name email password deleted last_logged_in_at)
   @optional_fields ~w()
 
   @doc """
