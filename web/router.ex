@@ -24,5 +24,6 @@ defmodule Todo.Router do
   scope "/api", Todo do
     pipe_through :api
     resources "/tasks", TasksController
+    resources "/sessions", SessionController, only: [:create, :delete]
   end
 end
