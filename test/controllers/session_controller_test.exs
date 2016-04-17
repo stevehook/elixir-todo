@@ -9,12 +9,19 @@ defmodule Todo.SessionControllerTest do
     user
   end
 
+  def credentials_as_json(email, password) do
+    %{ "user" => %{"email" => "bob@example.com", "password" => "secret"} }
+    |> Poison.encode!()
+  end
+
   @tag :pending
   test "POST /api/sessions creates a new session given valid credentials" do
     user = create_user
+    params = credentials_as_json("bob@example.com", "secret")
+
     conn = conn
     |> put_req_header("content-type", "application/json")
-    |> post("/api/session", %{email: "bob@example.com", password: "secret"})
+    |> post("/api/sessions", params)
 
     assert json_response(conn, 201)
   end
