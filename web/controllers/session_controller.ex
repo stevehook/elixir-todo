@@ -22,7 +22,9 @@ defmodule Todo.SessionController do
   end
 
   defp authenticate(email, password) do
-    user = Repo.get_by(User, email: email, password: password)
-    {:ok, user}
+    case Repo.get_by(User, email: email, password: password) do
+      nil -> {:error, 'Login failed'}
+      user -> {:ok, user}
+    end
   end
 end
