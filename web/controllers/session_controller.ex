@@ -22,7 +22,7 @@ defmodule Todo.SessionController do
   end
 
   defp authenticate(email, password) do
-    user = Repo.get_by(User, %{email: email, password: password})
+    user = Repo.get_by(User, email: email, password: password)
     {:ok, user}
   end
 end
