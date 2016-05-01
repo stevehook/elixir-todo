@@ -26,8 +26,7 @@ defmodule Todo.SessionControllerTest do
     assert json_response(conn, 201)
   end
 
-  @tag :pending
-  test "POST /api/sessions does NOT create a new session given invalid credentials" do
+  test "POST /api/sessions does NOT create a new session given invalid password" do
     user = create_user
     params = credentials_as_json("bob@example.com", "wrong")
 
@@ -38,7 +37,22 @@ defmodule Todo.SessionControllerTest do
     assert json_response(conn, 422)
   end
 
-  @tag :pending
+  test "POST /api/sessions does NOT create a new session given invalid email" do
+    user = create_user
+    params = credentials_as_json("alice@example.com", "secret")
+
+    conn = conn
+    |> put_req_header("content-type", "application/json")
+    |> post("/api/sessions", params)
+
+    assert json_response(conn, 422)
+  end
+
   test "DELETE /api/sessions deletes an existing session" do
+    conn = conn
+    |> put_req_header("content-type", "application/json")
+    |> delete("/api/sessions")
+
+    assert json_response(conn, 200)
   end
 end
