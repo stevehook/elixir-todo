@@ -51,7 +51,7 @@ defmodule Todo.SessionControllerTest do
   test "DELETE /api/sessions deletes an existing session" do
     conn = conn
     |> put_req_header("content-type", "application/json")
-    |> delete("/api/sessions")
+    |> delete("/api/sessions/1")
 
     assert json_response(conn, 200)
   end

@@ -18,7 +18,11 @@ defmodule Todo.SessionController do
     end
   end
 
-  def delete(_conn, _params) do
+  def delete(conn, _params) do
+    # TODO
+    conn
+    |> put_status(200)
+    |> json(%{})
   end
 
   defp authenticate(email, password) do
