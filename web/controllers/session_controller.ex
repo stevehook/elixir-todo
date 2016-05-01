@@ -2,14 +2,12 @@ defmodule Todo.SessionController do
   use Todo.Web, :controller
 
   alias Todo.User
-  alias Todo.UserQuery
 
   plug :scrub_params, "user" when action in [:create]
 
-  def create(conn, params = %{"user" => %{"email" => email, "password" => password}}) do
+  def create(conn, %{"user" => %{"email" => email, "password" => password}}) do
     case authenticate(email, password) do
       {:ok, user} ->
-        IO.inspect user
         conn
         |> put_status(201)
         |> json(user)
@@ -20,7 +18,7 @@ defmodule Todo.SessionController do
     end
   end
 
-  def delete(conn, _params) do
+  def delete(_conn, _params) do
   end
 
   defp authenticate(email, password) do
