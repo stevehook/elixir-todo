@@ -34,5 +34,5 @@ config :guardian, Guardian,
   issuer: "Todo",
   ttl: { 30, :days },
   verify_issuer: true,
-  secret_key_base: "somelongkeythatweneedtochangeinproduction",
-  serializer: MyApp.GuardianSerializer
+  secret_key: "somelongkeythatweneedtochangeinproduction",
+  serializer: Todo.GuardianSerializer

@@ -10,6 +10,7 @@ defmodule Todo.SessionController do
       {:ok, user} ->
         conn
         |> put_status(201)
+        |> Guardian.Plug.sign_in(user)
         |> json(user)
       {:error, errors} ->
         conn
@@ -19,7 +20,7 @@ defmodule Todo.SessionController do
   end
 
   def delete(conn, _params) do
-    # TODO
+    # TODO - handle users that are not logged in
     conn
     |> put_status(200)
     |> json(%{})
