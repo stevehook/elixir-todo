@@ -55,4 +55,20 @@ defmodule Todo.SessionControllerTest do
 
     assert json_response(conn, 200)
   end
+
+  test "GET /api/sessions fetches an existing session" do
+    conn = conn
+    |> put_req_header("content-type", "application/json")
+    |> get("/api/sessions")
+
+    assert json_response(conn, 200)
+  end
+
+  test "GET /api/sessions fails with 422 when there is no session" do
+    conn = conn
+    |> put_req_header("content-type", "application/json")
+    |> get("/api/sessions")
+
+    assert json_response(conn, 422)
+  end
 end
