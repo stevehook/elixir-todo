@@ -30,6 +30,7 @@ defmodule Todo.Router do
     pipe_through :api
     resources "/tasks", TasksController
     resources "/sessions", SessionController, only: [:create]
-    delete "/sessions", SessionController, :delete
+    delete "/session", SessionController, :delete
+    get "/session", SessionController, :show
   end
 end

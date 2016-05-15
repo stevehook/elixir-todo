@@ -48,26 +48,36 @@ defmodule Todo.SessionControllerTest do
     assert json_response(conn, 422)
   end
 
-  test "DELETE /api/sessions deletes an existing session" do
+  test "DELETE /api/session deletes an existing session" do
     conn = conn
     |> put_req_header("content-type", "application/json")
-    |> delete("/api/sessions")
+    |> delete("/api/session")
 
     assert json_response(conn, 200)
   end
 
-  test "GET /api/sessions fetches an existing session" do
-    conn = conn
+  test "GET /api/session fetches an existing session" do
+    user = create_user
+
+    # First login
+    params = credentials_as_json("bob@example.com", "secret")
+    login_conn = Phoenix.ConnTest.conn()
     |> put_req_header("content-type", "application/json")
-    |> get("/api/sessions")
+    |> post("/api/sessions", params)
+    jwt = Guardian.Plug.current_token(login_conn)
+
+    conn = conn
+    |> put_req_header("authorization", jwt)
+    |> put_req_header("content-type", "application/json")
+    |> get("/api/session")
 
     assert json_response(conn, 200)
   end
 
-  test "GET /api/sessions fails with 422 when there is no session" do
+  test "GET /api/session fails with 422 when there is no session" do
     conn = conn
     |> put_req_header("content-type", "application/json")
-    |> get("/api/sessions")
+    |> get("/api/session")
 
     assert json_response(conn, 422)
   end

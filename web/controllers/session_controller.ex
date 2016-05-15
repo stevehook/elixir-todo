@@ -4,6 +4,7 @@ defmodule Todo.SessionController do
   alias Todo.User
 
   plug :scrub_params, "user" when action in [:create]
+  plug Guardian.Plug.EnsureAuthenticated, [handler: Todo.SessionController] when action in [:show]
 
   def create(conn, %{"user" => %{"email" => email, "password" => password}}) do
     case authenticate(email, password) do
@@ -23,6 +24,18 @@ defmodule Todo.SessionController do
     # TODO - handle users that are not logged in
     conn
     |> put_status(200)
+    |> json(%{})
+  end
+
+  def show(conn, _params) do
+    conn
+    |> put_status(200)
+    |> json(%{})
+  end
+
+  def unauthenticated(conn, _params) do
+    conn
+    |> put_status(422)
     |> json(%{})
   end
 
