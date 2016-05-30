@@ -14,7 +14,6 @@ defmodule Todo.SessionControllerTest do
     |> Poison.encode!()
   end
 
-  @tag :pending
   test "POST /api/sessions creates a new session given valid credentials" do
     user = create_user
     params = credentials_as_json("bob@example.com", "secret")
@@ -71,15 +70,9 @@ defmodule Todo.SessionControllerTest do
     |> put_req_header("content-type", "application/json")
     |> get("/api/session")
 
-    # Doesn't work because dates are not just converted to strings in JSON serializer
-    # expected = user
-    #   |> Map.from_struct
-    #   |> Map.drop([:__meta__, :__struct__])
-    #   |> Enum.reduce(%{}, fn ({key, val}, acc) -> Map.put(acc, Atom.to_string(key), Kernel.to_string(val)) end)
-
     expected = user
-      |> Poison.encode!
-      |> Poison.decode!
+    |> Poison.encode!
+    |> Poison.decode!
 
     assert json_response(conn, 200) == expected
   end
