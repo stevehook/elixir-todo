@@ -20,6 +20,7 @@ defmodule Todo.ConnCase do
       # Import conveniences for testing with connections
       use Phoenix.ConnTest
 
+      alias Todo.User
       alias Todo.Repo
       import Ecto.Model
       import Ecto.Query, only: [from: 2]
@@ -28,6 +29,25 @@ defmodule Todo.ConnCase do
 
       # The default endpoint for testing
       @endpoint Todo.Endpoint
+
+      def create_user do
+        { :ok, user } = %User{name: "Bob Roberts", email: "bob@example.com", password: "secret"}
+        |> Repo.insert
+        user
+      end
+
+      def credentials_as_json(email, password) do
+        %{ "user" => %{"email" => email, "password" => password} }
+        |> Poison.encode!()
+      end
+
+      def login_and_get_jwt do
+        params = credentials_as_json("bob@example.com", "secret")
+        login_conn = Phoenix.ConnTest.conn()
+        |> put_req_header("content-type", "application/json")
+        |> post("/api/sessions", params)
+        Guardian.Plug.current_token(login_conn)
+      end
     end
   end
 
