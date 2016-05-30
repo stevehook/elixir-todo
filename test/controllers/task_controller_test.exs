@@ -14,7 +14,7 @@ defmodule Todo.TaskControllerTest do
     |> List.wrap
     |> Poison.encode!
 
-    conn = get conn, "/api/tasks"
+    conn = get authenticated_conn, "/api/tasks"
 
     assert response(conn, 200) == tasks_as_json
   end
@@ -24,7 +24,7 @@ defmodule Todo.TaskControllerTest do
     task_as_json = task
     |> Poison.encode!
 
-    conn = get conn, "/api/tasks/#{task.id}"
+    conn = get authenticated_conn, "/api/tasks/#{task.id}"
 
     assert response(conn, 200) == task_as_json
   end
@@ -33,7 +33,7 @@ defmodule Todo.TaskControllerTest do
     task_as_json = %{ "task" => %Task{title: "Walk the dog"} }
     |> Poison.encode!()
 
-    conn = conn
+    conn = authenticated_conn
     |> put_req_header("content-type", "application/json")
     |> post("/api/tasks", task_as_json)
 
@@ -44,7 +44,7 @@ defmodule Todo.TaskControllerTest do
     task_as_json = %{ "task" => %Task{} }
     |> Poison.encode!()
 
-    conn = conn
+    conn = authenticated_conn
     |> put_req_header("content-type", "application/json")
     |> post("/api/tasks", task_as_json)
 
@@ -55,7 +55,7 @@ defmodule Todo.TaskControllerTest do
     task = create_task
     task_as_json = %{ "task" => %{title: "Wash the car"} }
 
-    conn = conn
+    conn = authenticated_conn
     |> put_req_header("content-type", "application/json")
     |> patch("/api/tasks/#{task.id}", task_as_json)
 
@@ -67,7 +67,7 @@ defmodule Todo.TaskControllerTest do
   test "DELETE /api/tasks/:id deletes an existing task" do
     task = create_task
 
-    conn = conn
+    conn = authenticated_conn
     |> put_req_header("content-type", "application/json")
     |> delete("/api/tasks/#{task.id}")
 

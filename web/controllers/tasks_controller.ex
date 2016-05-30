@@ -3,6 +3,8 @@ defmodule Todo.TasksController do
   alias Todo.Repo
   alias Todo.Task
 
+  plug Guardian.Plug.EnsureAuthenticated, [handler: Todo.SessionController]
+
   def index(conn, _params) do
     tasks = Repo.all(Task)
     conn

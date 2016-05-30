@@ -48,6 +48,15 @@ defmodule Todo.ConnCase do
         |> post("/api/sessions", params)
         Guardian.Plug.current_token(login_conn)
       end
+
+      def authenticated_conn do
+        create_user
+        jwt = login_and_get_jwt
+
+        conn = conn
+        |> put_req_header("authorization", jwt)
+        |> put_req_header("content-type", "application/json")
+      end
     end
   end
 
