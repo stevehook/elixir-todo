@@ -71,7 +71,34 @@ defmodule Todo.SessionControllerTest do
     |> put_req_header("content-type", "application/json")
     |> get("/api/session")
 
-    assert json_response(conn, 200)
+    # Doesn't work because dates are not just converted to strings in JSON serializer
+    # expected = user
+    #   |> Map.from_struct
+    #   |> Map.drop([:__meta__, :__struct__])
+    #   |> Enum.reduce(%{}, fn ({key, val}, acc) -> Map.put(acc, Atom.to_string(key), Kernel.to_string(val)) end)
+
+    expected = user
+      |> Poison.encode!
+      |> Poison.decode!
+
+    assert json_response(conn, 200) == expected
+  end
+
+  test "GET /api/session fails with 422 when the JWT auth header is missing" do
+    create_user
+
+    # First login
+    params = credentials_as_json("bob@example.com", "secret")
+    login_conn = Phoenix.ConnTest.conn()
+    |> put_req_header("content-type", "application/json")
+    |> post("/api/sessions", params)
+
+    conn = conn
+    |> put_req_header("authorization", "this is not the token you are looking for")
+    |> put_req_header("content-type", "application/json")
+    |> get("/api/session")
+
+    assert json_response(conn, 422)
   end
 
   test "GET /api/session fails with 422 when there is no session" do

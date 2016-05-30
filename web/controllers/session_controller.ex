@@ -30,7 +30,7 @@ defmodule Todo.SessionController do
   def show(conn, _params) do
     conn
     |> put_status(200)
-    |> json(%{})
+    |> json(Guardian.Plug.current_resource(conn))
   end
 
   def unauthenticated(conn, _params) do
