@@ -37,11 +37,19 @@ defmodule Todo.SessionControllerTest do
   end
 
   test "DELETE /api/session deletes an existing session" do
-    conn = conn
+    conn = authenticated_conn
     |> put_req_header("content-type", "application/json")
     |> delete("/api/session")
 
     assert json_response(conn, 200)
+  end
+
+  test "DELETE /api/session must be authenticated" do
+    conn = conn
+    |> put_req_header("content-type", "application/json")
+    |> delete("/api/session")
+
+    assert json_response(conn, 422)
   end
 
   test "GET /api/session fetches an existing session" do
