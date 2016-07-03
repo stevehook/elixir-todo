@@ -45,6 +45,17 @@ defmodule Todo.TaskControllerTest do
     assert %{ "title" => "Walk the dog" } = json_response(conn, 201)
   end
 
+  test "POST /api/tasks requires authenication" do
+    task_as_json = %{ "task" => %Task{title: "Walk the dog"} }
+    |> Poison.encode!()
+
+    conn = conn
+    |> put_req_header("content-type", "application/json")
+    |> post("/api/tasks", task_as_json)
+
+    assert response(conn, 422)
+  end
+
   test "POST /api/tasks fails with an error message if we try to create a new task without a title" do
     task_as_json = %{ "task" => %Task{} }
     |> Poison.encode!()
@@ -69,6 +80,17 @@ defmodule Todo.TaskControllerTest do
     assert task.title == "Wash the car"
   end
 
+  test "PATCH /api/tasks/:id requires authentication" do
+    task = create_task
+    task_as_json = %{ "task" => %{title: "Wash the car"} }
+
+    conn = conn
+    |> put_req_header("content-type", "application/json")
+    |> patch("/api/tasks/#{task.id}", task_as_json)
+
+    assert response(conn, 422)
+  end
+
   test "DELETE /api/tasks/:id deletes an existing task" do
     task = create_task
 
@@ -79,5 +101,15 @@ defmodule Todo.TaskControllerTest do
     assert json_response(conn, 200)
     task = Repo.get(Task, task.id)
     assert task == nil
+  end
+
+  test "DELETE /api/tasks/:id requires authentication" do
+    task = create_task
+
+    conn = conn
+    |> put_req_header("content-type", "application/json")
+    |> delete("/api/tasks/#{task.id}")
+
+    assert response(conn, 422)
   end
 end
