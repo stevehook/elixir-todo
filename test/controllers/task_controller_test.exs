@@ -112,4 +112,16 @@ defmodule Todo.TaskControllerTest do
 
     assert response(conn, 422)
   end
+
+  test "PATCH /api/tasks/:id/complete marks an existing task as completed" do
+    task = create_task
+
+    conn = authenticated_conn
+    |> put_req_header("content-type", "application/json")
+    |> patch("/api/tasks/#{task.id}/complete")
+
+    assert %{ "title" => "Walk the dog", "status" => "completed" } = json_response(conn, 200)
+    task = Repo.get!(Task, task.id)
+    assert task.status == "completed"
+  end
 end
