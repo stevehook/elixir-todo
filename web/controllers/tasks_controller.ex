@@ -3,6 +3,8 @@ defmodule Todo.TasksController do
   alias Todo.Repo
   alias Todo.Task
 
+  plug Guardian.Plug.EnsureAuthenticated, [handler: Todo.SessionController]
+
   def index(conn, _params) do
     tasks = Repo.all(Task)
     conn
@@ -35,6 +37,22 @@ defmodule Todo.TasksController do
   def update(conn, %{"id" => id, "task" => task_params}) do
     task = Repo.get!(Task, id)
     changeset = Task.changeset(task, task_params)
+    case Repo.update(changeset) do
+      {:ok, task} ->
+        conn
+        |> put_status(200)
+        |> json(task)
+      {:error, changeset} ->
+        errors = changeset.errors |> Enum.into(%{})
+        conn
+        |> put_status(422)
+        |> json(%{ "errors" => errors })
+    end
+  end
+
+  def complete(conn, %{"id" => id}) do
+    task = Repo.get!(Task, id)
+    changeset = Task.changeset(task, %{"completed" => true})
     case Repo.update(changeset) do
       {:ok, task} ->
         conn
