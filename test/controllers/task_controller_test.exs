@@ -120,8 +120,8 @@ defmodule Todo.TaskControllerTest do
     |> put_req_header("content-type", "application/json")
     |> patch("/api/tasks/#{task.id}/complete")
 
-    assert %{ "title" => "Walk the dog", "status" => "completed" } = json_response(conn, 200)
+    assert %{ "title" => "Walk the dog", "completed" => true } = json_response(conn, 200)
     task = Repo.get!(Task, task.id)
-    assert task.status == "completed"
+    assert task.completed == true
   end
 end

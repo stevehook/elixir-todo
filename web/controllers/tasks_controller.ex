@@ -50,6 +50,22 @@ defmodule Todo.TasksController do
     end
   end
 
+  def complete(conn, %{"id" => id}) do
+    task = Repo.get!(Task, id)
+    changeset = Task.changeset(task, %{"completed" => true})
+    case Repo.update(changeset) do
+      {:ok, task} ->
+        conn
+        |> put_status(200)
+        |> json(task)
+      {:error, changeset} ->
+        errors = changeset.errors |> Enum.into(%{})
+        conn
+        |> put_status(422)
+        |> json(%{ "errors" => errors })
+    end
+  end
+
   def delete(conn, %{"id" => id}) do
     task = Repo.get!(Task, id)
     case Repo.delete(task) do
