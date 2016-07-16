@@ -1,7 +1,7 @@
 defmodule Todo.Team do
   use Todo.Web, :model
 
-  schema "users" do
+  schema "teams" do
     field :name, :string
     timestamps
   end
@@ -21,8 +21,8 @@ defmodule Todo.Team do
   end
 
   defimpl Poison.Encoder, for: Todo.Team do
-    def encode(user, _options) do
-      user
+    def encode(team, _options) do
+      team
       |> Map.from_struct
       |> Map.drop([:__meta__, :__struct__])
       |> Poison.encode!
