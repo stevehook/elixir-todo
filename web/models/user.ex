@@ -11,6 +11,8 @@ defmodule Todo.User do
     timestamps
   end
 
+  many_to_many :teams, Todo.Team, join_through: "users_teams"
+
   @required_fields ~w(name email password deleted last_logged_in_at)
   @optional_fields ~w()
 
