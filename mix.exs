@@ -30,13 +30,14 @@ defmodule Todo.Mixfile do
   #
   # Type `mix help deps` for examples and options.
   defp deps do
-    [{:phoenix, "~> 1.1.1"},
-     {:phoenix_ecto, "~> 2.0"},
-     {:guardian, "~> 0.10.0"},
+    [{:phoenix, "~> 1.2.0"},
+     {:phoenix_ecto, "~> 3.0"},
+     {:ecto, "~> 2.0"},
+     {:guardian, "~> 0.12.0"},
      {:postgrex, "~> 0.11.0"},
-     {:phoenix_html, "~> 2.3"},
+     {:phoenix_html, "~> 2.6"},
      {:phoenix_live_reload, "~> 1.0", only: :dev},
-     {:gettext, "~> 0.9"},
+     {:gettext, "~> 0.11"},
      {:cowboy, "~> 1.0"}]
   end
 
