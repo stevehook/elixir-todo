@@ -1,5 +1,6 @@
 defmodule Todo.User do
   use Todo.Web, :model
+  use Ecto.Schema
 
   schema "users" do
     field :name, :string
@@ -8,10 +9,10 @@ defmodule Todo.User do
     field :deleted, :boolean, default: false
     field :last_logged_in_at, Ecto.DateTime
 
+    # many_to_many :teams, Todo.Team, join_through: "users_teams"
+
     timestamps
   end
-
-  many_to_many :teams, Todo.Team, join_through: "users_teams"
 
   @required_fields ~w(name email password deleted last_logged_in_at)
   @optional_fields ~w()

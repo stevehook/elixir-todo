@@ -1,8 +1,10 @@
 defmodule Todo.Team do
   use Todo.Web, :model
+  use Ecto.Schema
 
   schema "teams" do
     field :name, :string
+    # many_to_many :users, Todo.User, join_through: "users_teams"
     timestamps
   end
 
