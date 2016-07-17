@@ -8,8 +8,8 @@ defmodule Todo.Repo.Migrations.AddTeams do
     end
 
     create table(:users_teams) do
-      add :user_id, :integer, null: false
-      add :team_id, :integer, null: false
+      add :user_id, references(:users), null: false
+      add :team_id, references(:teams), null: false
       timestamps
     end
   end
