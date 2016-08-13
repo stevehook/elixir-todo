@@ -20,4 +20,10 @@ defmodule Todo.TeamControllerTest do
     conn = get authenticated_conn, "/api/teams"
     assert response(conn, 200) == teams_as_json
   end
+
+  test "GET /api/teams returns 401 is not authenticated" do
+    teams_as_json = create_teams_as_json
+    conn = get build_conn, "/api/teams"
+    assert response(conn, 422)
+  end
 end
