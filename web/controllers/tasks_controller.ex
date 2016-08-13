@@ -27,11 +27,17 @@ defmodule Todo.TasksController do
         |> put_status(201)
         |> json(task)
       {:error, changeset} ->
-        errors = changeset.errors |> Enum.into(%{})
+        errors = errors_for_json(changeset.errors)
         conn
         |> put_status(422)
         |> json(%{ "errors" => errors })
     end
+  end
+
+  def errors_for_json(fields) do
+    keyword_list = Enum.map(fields,
+      fn {field, detail} -> { field, elem(detail, 0) } end)
+    Enum.into(keyword_list, %{})
   end
 
   def update(conn, %{"id" => id, "task" => task_params}) do
