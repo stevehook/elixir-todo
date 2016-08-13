@@ -1,4 +1,4 @@
-defmodule Todo.TasksController do
+defmodule Todo.TaskController do
   use Todo.Web, :controller
   alias Todo.Repo
   alias Todo.Task
