@@ -3,14 +3,15 @@ defmodule Todo.TeamControllerTest do
   alias Todo.Team
   alias Todo.Repo
 
-  def create_team do
-    { :ok, team } = %Team{name: "Houseworkers"}
+  def create_team(name) do
+    { :ok, team } = %Team{name: name}
     |> Repo.insert
     team
   end
 
   def create_teams_as_json do
-    create_team
+    create_team("Office workers")
+    create_team("House workers")
     |> List.wrap
     |> Poison.encode!
   end
