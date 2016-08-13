@@ -15,9 +15,9 @@ defmodule Todo.TeamControllerTest do
     |> Poison.encode!
   end
 
-  # test "GET /api/teams returns a list of current user teams" do
-  #   teams_as_json = create_teams_as_json
-  #   conn = get authenticated_conn, "/api/teams"
-  #   assert response(conn, 200) == teams_as_json
-  # end
+  test "GET /api/teams returns a list of current user teams" do
+    teams_as_json = create_teams_as_json
+    conn = get authenticated_conn, "/api/teams"
+    assert response(conn, 200) == teams_as_json
+  end
 end
