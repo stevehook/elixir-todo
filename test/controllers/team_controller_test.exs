@@ -11,6 +11,7 @@ defmodule Todo.TeamControllerTest do
 
   def create_teams_as_json(user) do
     create_team("Office workers")
+
     house_workers = create_team("House workers")
     |> Repo.preload(:users)
     |> Ecto.Changeset.change
