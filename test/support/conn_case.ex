@@ -49,8 +49,7 @@ defmodule Todo.ConnCase do
         Guardian.Plug.current_token(login_conn)
       end
 
-      def authenticated_conn do
-        create_user
+      def authenticated_conn(user \\ create_user) do
         jwt = login_and_get_jwt
 
         conn = build_conn

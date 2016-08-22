@@ -4,7 +4,7 @@ defmodule Todo.Team do
 
   schema "teams" do
     field :name, :string
-    # many_to_many :users, Todo.User, join_through: "users_teams"
+    many_to_many :users, Todo.User, join_through: "users_teams"
     timestamps
   end
 
@@ -26,7 +26,7 @@ defmodule Todo.Team do
     def encode(team, _options) do
       team
       |> Map.from_struct
-      |> Map.drop([:__meta__, :__struct__])
+      |> Map.drop([:__meta__, :__struct__, :users])
       |> Poison.encode!
     end
   end

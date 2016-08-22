@@ -9,21 +9,27 @@ defmodule Todo.TeamControllerTest do
     team
   end
 
-  def create_teams_as_json do
+  def create_teams_as_json(user) do
     create_team("Office workers")
-    create_team("House workers")
+    house_workers = create_team("House workers")
+    |> Repo.preload(:users)
+    # house_workers.users << user
+
+    house_workers
     |> List.wrap
     |> Poison.encode!
   end
 
   test "GET /api/teams returns a list of current user teams" do
-    teams_as_json = create_teams_as_json
-    conn = get authenticated_conn, "/api/teams"
+    user = create_user
+    teams_as_json = create_teams_as_json(user)
+    conn = get authenticated_conn(user), "/api/teams"
     assert response(conn, 200) == teams_as_json
   end
 
   test "GET /api/teams returns 401 is not authenticated" do
-    teams_as_json = create_teams_as_json
+    user = create_user
+    create_teams_as_json(user)
     conn = get build_conn, "/api/teams"
     assert response(conn, 422)
   end

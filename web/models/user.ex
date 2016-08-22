@@ -9,7 +9,7 @@ defmodule Todo.User do
     field :deleted, :boolean, default: false
     field :last_logged_in_at, Ecto.DateTime
 
-    # many_to_many :teams, Todo.Team, join_through: "users_teams"
+    many_to_many :teams, Todo.Team, join_through: "users_teams"
 
     timestamps
   end
@@ -32,7 +32,7 @@ defmodule Todo.User do
     def encode(user, _options) do
       user
       |> Map.from_struct
-      |> Map.drop([:__meta__, :__struct__])
+      |> Map.drop([:__meta__, :__struct__, :teams])
       |> Poison.encode!
     end
   end
