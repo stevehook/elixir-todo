@@ -13,7 +13,9 @@ defmodule Todo.TeamControllerTest do
     create_team("Office workers")
     house_workers = create_team("House workers")
     |> Repo.preload(:users)
-    # house_workers.users << user
+    |> Ecto.Changeset.change
+    |> Ecto.Changeset.put_assoc(:users, [user])
+    |> Repo.update!
 
     house_workers
     |> List.wrap
