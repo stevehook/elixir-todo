@@ -5,6 +5,7 @@ defmodule Todo.Project do
   schema "projects" do
     field :name, :string
     many_to_many :users, Todo.User, join_through: "users_projects"
+    has_many :tasks, Todo.Task
     timestamps
   end
 

@@ -1,12 +1,15 @@
 defmodule Todo.TaskController do
   use Todo.Web, :controller
   alias Todo.Repo
+  alias Todo.Project
   alias Todo.Task
 
   plug Guardian.Plug.EnsureAuthenticated, [handler: Todo.SessionController]
 
-  def index(conn, _params) do
-    tasks = Repo.all(Task)
+  def index(conn, %{"project_id" => project_id}) do
+    project = Repo.get!(Project, project_id)
+    |> Repo.preload([:tasks])
+    tasks = project.tasks
     conn
     |> put_status(200)
     |> json(tasks)
