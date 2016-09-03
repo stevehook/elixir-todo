@@ -4,9 +4,16 @@ defmodule Todo.TaskControllerTest do
   alias Todo.Task
   alias Todo.Repo
 
-  def create_project(name) do
+  def create_project(name, user \\ nil) do
     { :ok, project } = %Project{name: name}
     |> Repo.insert
+    if user do
+      project
+      |> Repo.preload(:users)
+      |> Ecto.Changeset.change
+      |> Ecto.Changeset.put_assoc(:users, [user])
+      |> Repo.update!
+    end
     project
   end
 
@@ -23,12 +30,13 @@ defmodule Todo.TaskControllerTest do
   end
 
   test "GET /api/projects/:project_id/tasks returns a list of tasks" do
-    project = create_project("Learn Elixir")
+    user = create_user
+    project = create_project("Learn Elixir", user)
     tasks_as_json = create_tasks_as_json(project)
     create_project("Learn Clojure")
     |> create_task
 
-    conn = get authenticated_conn, "/api/projects/#{project.id}/tasks"
+    conn = get authenticated_conn(user), "/api/projects/#{project.id}/tasks"
     assert response(conn, 200) == tasks_as_json
   end
 
@@ -39,7 +47,13 @@ defmodule Todo.TaskControllerTest do
     assert response(conn, 422)
   end
 
-  test "GET /api/projects/:project_id/tasks returns 404 for a non-existent project"
+  test "GET /api/projects/:project_id/tasks returns 404 for a non-existent project" do
+    user = create_user
+    project = create_project("Learn Elixir")
+    conn = get authenticated_conn(user), "/api/projects/#{project.id + 1}/tasks"
+    assert response(conn, 404)
+  end
+
   test "GET /api/projects/:project_id/tasks returns 404 for a project that I am not a member of"
 
   # test "GET /api/tasks/:id returns a single task" do
