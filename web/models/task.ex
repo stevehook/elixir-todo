@@ -8,13 +8,13 @@ defmodule Todo.Task do
     field :order, :integer
     field :archived_at, Ecto.Date
     belongs_to :user, Todo.User
-    belongs_to :team, Todo.Team
+    belongs_to :project, Todo.Project
 
     timestamps
   end
 
   @required_fields ~w(title completed)
-  @optional_fields ~w(complete_by order archived_at user_id team_id)
+  @optional_fields ~w(complete_by order archived_at user_id project_id)
 
   @doc """
   Creates a changeset based on the `model` and `params`.
@@ -31,7 +31,7 @@ defmodule Todo.Task do
     def encode(task, _options) do
       task
       |> Map.from_struct
-      |> Map.drop([:__meta__, :__struct__, :user, :team])
+      |> Map.drop([:__meta__, :__struct__, :user, :project])
       |> Poison.encode!
     end
   end

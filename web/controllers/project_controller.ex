@@ -1,20 +1,20 @@
-defmodule Todo.TeamController do
+defmodule Todo.ProjectController do
   use Todo.Web, :controller
   alias Todo.Repo
-  alias Todo.Team
+  alias Todo.Project
 
   plug Guardian.Plug.EnsureAuthenticated, [handler: Todo.SessionController]
 
   def index(conn, _params) do
     user = Guardian.Plug.current_resource(conn)
 
-    query = from t in Team,
+    query = from t in Project,
       join: u in assoc(t, :users),
       where: u.id == ^user.id
 
-    teams = Repo.all(query)
+    projects = Repo.all(query)
     conn
     |> put_status(200)
-    |> json(teams)
+    |> json(projects)
   end
 end

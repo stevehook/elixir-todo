@@ -1,10 +1,10 @@
-defmodule Todo.Team do
+defmodule Todo.Project do
   use Todo.Web, :model
   use Ecto.Schema
 
-  schema "teams" do
+  schema "projects" do
     field :name, :string
-    many_to_many :users, Todo.User, join_through: "users_teams"
+    many_to_many :users, Todo.User, join_through: "users_projects"
     timestamps
   end
 
@@ -22,9 +22,9 @@ defmodule Todo.Team do
     |> cast(params, @required_fields, @optional_fields)
   end
 
-  defimpl Poison.Encoder, for: Todo.Team do
-    def encode(team, _options) do
-      team
+  defimpl Poison.Encoder, for: Todo.Project do
+    def encode(project, _options) do
+      project
       |> Map.from_struct
       |> Map.drop([:__meta__, :__struct__, :users])
       |> Poison.encode!
