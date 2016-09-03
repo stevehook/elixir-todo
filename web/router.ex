@@ -26,8 +26,9 @@ defmodule Todo.Router do
   # Other scopes may use custom stacks.
   scope "/api", Todo do
     pipe_through :api
-    resources "/tasks", TaskController
-    resources "/projects", ProjectController
+    resources "/projects", ProjectController do
+      resources "/tasks", TaskController
+    end
     patch "/tasks/:id/complete", TaskController, :complete
     resources "/sessions", SessionController, only: [:create]
     delete "/session", SessionController, :delete
