@@ -54,7 +54,15 @@ defmodule Todo.TaskControllerTest do
     assert response(conn, 404)
   end
 
-  test "GET /api/projects/:project_id/tasks returns 404 for a project that I am not a member of"
+  test "GET /api/projects/:project_id/tasks returns 404 for a project that I am not a member of" do
+    project = create_project("Learn Elixir")
+    tasks_as_json = create_tasks_as_json(project)
+    create_project("Learn Clojure")
+    |> create_task
+
+    conn = get authenticated_conn, "/api/projects/#{project.id}/tasks"
+    assert response(conn, 404)
+  end
 
   # test "GET /api/tasks/:id returns a single task" do
   #   task = create_task
