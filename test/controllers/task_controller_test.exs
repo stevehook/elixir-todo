@@ -25,6 +25,9 @@ defmodule Todo.TaskControllerTest do
   test "GET /api/projects/:project_id/tasks returns a list of tasks" do
     project = create_project("Learn Elixir")
     tasks_as_json = create_tasks_as_json(project)
+    create_project("Learn Clojure")
+    |> create_task
+
     conn = get authenticated_conn, "/api/projects/#{project.id}/tasks"
     assert response(conn, 200) == tasks_as_json
   end
