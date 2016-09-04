@@ -27,7 +27,7 @@ defmodule Todo.Project do
     def encode(project, _options) do
       project
       |> Map.from_struct
-      |> Map.drop([:__meta__, :__struct__, :users])
+      |> Map.drop([:__meta__, :__struct__, :users, :tasks])
       |> Poison.encode!
     end
   end
