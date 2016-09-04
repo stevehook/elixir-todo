@@ -64,12 +64,15 @@ defmodule Todo.TaskControllerTest do
     assert response(conn, 404)
   end
 
-  # test "GET /api/tasks/:id returns a single task" do
-  #   task = create_task
-  #   task_as_json = task |> Poison.encode!()
-  #   conn = get authenticated_conn, "/api/tasks/#{task.id}"
-  #   assert response(conn, 200) == task_as_json
-  # end
+  test "GET /api/projects/:project_id/tasks/:id returns a single task" do
+    user = create_user
+    project = create_project("Learn Elixir", user)
+    task = create_task(project)
+    task_as_json = task |> Poison.encode!()
+
+    conn = get authenticated_conn(user), "/api/projects/#{project.id}/tasks/#{task.id}"
+    assert response(conn, 200) == task_as_json
+  end
 
   # test "POST /api/tasks creates a new task" do
   #   task_as_json = %{ "task" => %Task{title: "Walk the dog"} }
