@@ -7,7 +7,12 @@ defmodule Todo.TaskController do
   plug Guardian.Plug.EnsureAuthenticated, [handler: Todo.SessionController]
 
   def index(conn, %{"project_id" => project_id}) do
-    case Repo.get(Project, project_id) do
+    user = Guardian.Plug.current_resource(conn)
+    query = from t in Project,
+      join: u in assoc(t, :users),
+      where: u.id == ^user.id
+
+    case Repo.get(query, project_id) do
       nil ->
         conn
         |> put_status(404)
