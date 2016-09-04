@@ -65,7 +65,7 @@ defmodule Todo.TaskControllerTest do
 
   test "GET /api/projects/:project_id/tasks returns 404 for a non-existent project",
       %{user: user, project: project} do
-    conn = get authenticated_conn(user), "/api/projects/#{project.id + 1}/tasks"
+    conn = get authenticated_conn(user), "/api/projects/#{project.id + 10}/tasks"
     assert response(conn, 404)
   end
 
@@ -82,9 +82,23 @@ defmodule Todo.TaskControllerTest do
     assert response(conn, 200) == task_as_json
   end
 
-  # test "GET /api/projects/:project_id/tasks/:id returns 404 for a missing project"
-  # test "GET /api/projects/:project_id/tasks/:id returns 404 for a project that I don't belong to"
-  # test "GET /api/projects/:project_id/tasks/:id returns 404 for a missing task"
+  test "GET /api/projects/:project_id/tasks/:id returns 404 for a missing project",
+      %{user: user, project: project, task: task} do
+    conn = get authenticated_conn(user), "/api/projects/#{project.id + 10}/tasks/#{task.id}"
+    assert response(conn, 404)
+  end
+
+  test "GET /api/projects/:project_id/tasks/:id returns 404 for a project that I don't belong to",
+      %{user: user, other_project: project, other_task: task} do
+    conn = get authenticated_conn(user), "/api/projects/#{project.id + 10}/tasks/#{task.id}"
+    assert response(conn, 404)
+  end
+
+  test "GET /api/projects/:project_id/tasks/:id returns 404 for a missing task",
+      %{user: user, project: project, task: task} do
+    conn = get authenticated_conn(user), "/api/projects/#{project.id}/tasks/#{task.id + 10}"
+    assert response(conn, 404)
+  end
 
   # test "POST /api/tasks creates a new task" do
   #   task_as_json = %{ "task" => %Task{title: "Walk the dog"} }
