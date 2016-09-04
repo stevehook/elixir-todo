@@ -4,6 +4,22 @@ defmodule Todo.TaskControllerTest do
   alias Todo.Task
   alias Todo.Repo
 
+  setup do
+    user = create_user
+    project = create_project("Learn Elixir", user)
+    other_project = create_project("Learn Clojure")
+    task = create_task("Read a book", project)
+    other_task = create_task("Write come code", other_project)
+    {:ok, [
+        user: user,
+        project: project,
+        other_project: other_project,
+        task: task,
+        other_task: other_task
+      ]
+    }
+  end
+
   def create_project(name, user \\ nil) do
     { :ok, project } = %Project{name: name}
     |> Repo.insert
@@ -17,62 +33,58 @@ defmodule Todo.TaskControllerTest do
     project
   end
 
-  def create_task(project) do
-    { :ok, task } = %Task{title: "Read a book", project_id: project.id}
+  def create_task(title, project) do
+    { :ok, task } = %Task{title: title, project_id: project.id}
     |> Repo.insert
     task
   end
 
-  def create_tasks_as_json(project) do
-    create_task(project)
+  def task_as_json(task) do
+    task
+    |> Poison.encode!
+  end
+
+  def task_as_json_list(task) do
+    task
     |> List.wrap
     |> Poison.encode!
   end
 
-  test "GET /api/projects/:project_id/tasks returns a list of tasks" do
-    user = create_user
-    project = create_project("Learn Elixir", user)
-    tasks_as_json = create_tasks_as_json(project)
-    create_project("Learn Clojure")
-    |> create_task
-
+  test "GET /api/projects/:project_id/tasks returns a list of tasks",
+      %{user: user, project: project, task: task} do
+    tasks_as_json = task_as_json_list(task)
     conn = get authenticated_conn(user), "/api/projects/#{project.id}/tasks"
     assert response(conn, 200) == tasks_as_json
   end
 
-  test "GET /api/projects/:project_id/tasks requires authentication" do
-    project = create_project("Learn Elixir")
-    create_tasks_as_json(project)
+  test "GET /api/projects/:project_id/tasks requires authentication",
+      %{project: project} do
     conn = get build_conn, "/api/projects/#{project.id}/tasks"
     assert response(conn, 422)
   end
 
-  test "GET /api/projects/:project_id/tasks returns 404 for a non-existent project" do
-    user = create_user
-    project = create_project("Learn Elixir")
+  test "GET /api/projects/:project_id/tasks returns 404 for a non-existent project",
+      %{user: user, project: project} do
     conn = get authenticated_conn(user), "/api/projects/#{project.id + 1}/tasks"
     assert response(conn, 404)
   end
 
-  test "GET /api/projects/:project_id/tasks returns 404 for a project that I am not a member of" do
-    project = create_project("Learn Elixir")
-    tasks_as_json = create_tasks_as_json(project)
-    create_project("Learn Clojure")
-    |> create_task
-
-    conn = get authenticated_conn, "/api/projects/#{project.id}/tasks"
+  test "GET /api/projects/:project_id/tasks returns 404 for a project that I am not a member of",
+      %{user: user, other_project: project} do
+    conn = get authenticated_conn(user), "/api/projects/#{project.id}/tasks"
     assert response(conn, 404)
   end
 
-  test "GET /api/projects/:project_id/tasks/:id returns a single task" do
-    user = create_user
-    project = create_project("Learn Elixir", user)
-    task = create_task(project)
-    task_as_json = task |> Poison.encode!()
-
+  test "GET /api/projects/:project_id/tasks/:id returns a single task",
+      %{user: user, project: project, task: task} do
+    task_as_json = task_as_json(task)
     conn = get authenticated_conn(user), "/api/projects/#{project.id}/tasks/#{task.id}"
     assert response(conn, 200) == task_as_json
   end
+
+  # test "GET /api/projects/:project_id/tasks/:id returns 404 for a missing project"
+  # test "GET /api/projects/:project_id/tasks/:id returns 404 for a project that I don't belong to"
+  # test "GET /api/projects/:project_id/tasks/:id returns 404 for a missing task"
 
   # test "POST /api/tasks creates a new task" do
   #   task_as_json = %{ "task" => %Task{title: "Walk the dog"} }
