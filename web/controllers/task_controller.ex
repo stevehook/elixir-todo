@@ -6,13 +6,16 @@ defmodule Todo.TaskController do
 
   plug Guardian.Plug.EnsureAuthenticated, [handler: Todo.SessionController]
 
-  def index(conn, %{"project_id" => project_id}) do
+  defp load_project(project_id, conn) do
     user = Guardian.Plug.current_resource(conn)
     query = from t in Project,
       join: u in assoc(t, :users),
       where: u.id == ^user.id
+    Repo.get(query, project_id)
+  end
 
-    case Repo.get(query, project_id) do
+  def index(conn, %{"project_id" => project_id}) do
+    case load_project(project_id, conn) do
       nil ->
         conn
         |> put_status(404)
@@ -26,11 +29,19 @@ defmodule Todo.TaskController do
     end
   end
 
-  def show(conn, %{"id" => id}) do
-    task = Repo.get!(Task, id)
-    conn
-    |> put_status(200)
-    |> json(task)
+  def show(conn, %{"project_id" => project_id, "id" => id}) do
+    case load_project(project_id, conn) do
+      nil ->
+        conn
+        |> put_status(404)
+        |> json(%{})
+      project ->
+        project = Repo.preload(project, [:tasks])
+        task = Repo.get!(Task, id)
+        conn
+        |> put_status(200)
+        |> json(task)
+    end
   end
 
   def create(conn, %{"task" => task_params}) do
