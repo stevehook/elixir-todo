@@ -1,4 +1,5 @@
 defmodule Todo.TaskControllerTest do
+  use ExUnit.Case
   use Todo.ConnCase
   alias Todo.Project
   alias Todo.Task
@@ -50,54 +51,50 @@ defmodule Todo.TaskControllerTest do
     |> Poison.encode!
   end
 
-  test "GET /api/projects/:project_id/tasks returns a list of tasks",
-      %{user: user, project: project, task: task} do
-    tasks_as_json = task_as_json_list(task)
-    conn = get authenticated_conn(user), "/api/projects/#{project.id}/tasks"
-    assert response(conn, 200) == tasks_as_json
+  describe "GET /api/projects/:project_id/tasks" do
+    test "returns a list of tasks", %{user: user, project: project, task: task} do
+      tasks_as_json = task_as_json_list(task)
+      conn = get authenticated_conn(user), "/api/projects/#{project.id}/tasks"
+      assert response(conn, 200) == tasks_as_json
+    end
+
+    test "requires authentication", %{project: project} do
+      conn = get build_conn, "/api/projects/#{project.id}/tasks"
+      assert response(conn, 422)
+    end
+
+    test "returns 404 for a non-existent project", %{user: user, project: project} do
+      conn = get authenticated_conn(user), "/api/projects/#{project.id + 10}/tasks"
+      assert response(conn, 404)
+    end
+
+    test "returns 404 for a project that I am not a member of", %{user: user, other_project: project} do
+      conn = get authenticated_conn(user), "/api/projects/#{project.id}/tasks"
+      assert response(conn, 404)
+    end
   end
 
-  test "GET /api/projects/:project_id/tasks requires authentication",
-      %{project: project} do
-    conn = get build_conn, "/api/projects/#{project.id}/tasks"
-    assert response(conn, 422)
-  end
+  describe "GET /api/projects/:project_id/tasks/:id" do
+    test "returns a single task", %{user: user, project: project, task: task} do
+      task_as_json = task_as_json(task)
+      conn = get authenticated_conn(user), "/api/projects/#{project.id}/tasks/#{task.id}"
+      assert response(conn, 200) == task_as_json
+    end
 
-  test "GET /api/projects/:project_id/tasks returns 404 for a non-existent project",
-      %{user: user, project: project} do
-    conn = get authenticated_conn(user), "/api/projects/#{project.id + 10}/tasks"
-    assert response(conn, 404)
-  end
+    test "returns 404 for a missing project", %{user: user, project: project, task: task} do
+      conn = get authenticated_conn(user), "/api/projects/#{project.id + 10}/tasks/#{task.id}"
+      assert response(conn, 404)
+    end
 
-  test "GET /api/projects/:project_id/tasks returns 404 for a project that I am not a member of",
-      %{user: user, other_project: project} do
-    conn = get authenticated_conn(user), "/api/projects/#{project.id}/tasks"
-    assert response(conn, 404)
-  end
+    test "returns 404 for a project that I don't belong to", %{user: user, other_project: project, other_task: task} do
+      conn = get authenticated_conn(user), "/api/projects/#{project.id + 10}/tasks/#{task.id}"
+      assert response(conn, 404)
+    end
 
-  test "GET /api/projects/:project_id/tasks/:id returns a single task",
-      %{user: user, project: project, task: task} do
-    task_as_json = task_as_json(task)
-    conn = get authenticated_conn(user), "/api/projects/#{project.id}/tasks/#{task.id}"
-    assert response(conn, 200) == task_as_json
-  end
-
-  test "GET /api/projects/:project_id/tasks/:id returns 404 for a missing project",
-      %{user: user, project: project, task: task} do
-    conn = get authenticated_conn(user), "/api/projects/#{project.id + 10}/tasks/#{task.id}"
-    assert response(conn, 404)
-  end
-
-  test "GET /api/projects/:project_id/tasks/:id returns 404 for a project that I don't belong to",
-      %{user: user, other_project: project, other_task: task} do
-    conn = get authenticated_conn(user), "/api/projects/#{project.id + 10}/tasks/#{task.id}"
-    assert response(conn, 404)
-  end
-
-  test "GET /api/projects/:project_id/tasks/:id returns 404 for a missing task",
-      %{user: user, project: project, task: task} do
-    conn = get authenticated_conn(user), "/api/projects/#{project.id}/tasks/#{task.id + 10}"
-    assert response(conn, 404)
+    test "returns 404 for a missing task", %{user: user, project: project, task: task} do
+      conn = get authenticated_conn(user), "/api/projects/#{project.id}/tasks/#{task.id + 10}"
+      assert response(conn, 404)
+    end
   end
 
   # test "POST /api/tasks creates a new task" do
