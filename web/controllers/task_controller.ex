@@ -36,11 +36,16 @@ defmodule Todo.TaskController do
         |> put_status(404)
         |> json(%{})
       project ->
-        project = Repo.preload(project, [:tasks])
-        task = Repo.get!(Task, id)
-        conn
-        |> put_status(200)
-        |> json(task)
+        case Repo.get_by(Task, %{id: id, project_id: project.id}) do
+          nil ->
+            conn
+            |> put_status(404)
+            |> json(%{})
+          task ->
+            conn
+            |> put_status(200)
+            |> json(task)
+        end
     end
   end
 
