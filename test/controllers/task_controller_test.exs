@@ -159,7 +159,7 @@ defmodule Todo.TaskControllerTest do
       assert task.title == "Wash the car"
     end
 
-    test "requires authentication", %{user: user, project: project, task: task} do
+    test "requires authentication", %{project: project, task: task} do
       task_as_json = %{ "task" => %{title: "Wash the car"} }
 
       conn = build_conn
