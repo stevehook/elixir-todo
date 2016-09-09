@@ -20,16 +20,16 @@ defmodule Todo.Router do
 
   scope "/", Todo do
     pipe_through :browser # Use the default browser stack
-
     get "/", PageController, :index
-    # get "/tasks", TasksController, :index
   end
 
   # Other scopes may use custom stacks.
   scope "/api", Todo do
     pipe_through :api
-    resources "/tasks", TasksController
-    patch "/tasks/:id/complete", TasksController, :complete
+    resources "/projects", ProjectController do
+      resources "/tasks", TaskController
+      patch "/tasks/:id/complete", TaskController, :complete
+    end
     resources "/sessions", SessionController, only: [:create]
     delete "/session", SessionController, :delete
     get "/session", SessionController, :show

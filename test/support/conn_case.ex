@@ -43,17 +43,16 @@ defmodule Todo.ConnCase do
 
       def login_and_get_jwt do
         params = credentials_as_json("bob@example.com", "secret")
-        login_conn = Phoenix.ConnTest.conn()
+        login_conn = Phoenix.ConnTest.build_conn()
         |> put_req_header("content-type", "application/json")
         |> post("/api/sessions", params)
         Guardian.Plug.current_token(login_conn)
       end
 
-      def authenticated_conn do
-        create_user
+      def authenticated_conn(user \\ create_user) do
         jwt = login_and_get_jwt
 
-        conn = conn
+        conn = build_conn
         |> put_req_header("authorization", jwt)
         |> put_req_header("content-type", "application/json")
       end
@@ -62,9 +61,9 @@ defmodule Todo.ConnCase do
 
   setup tags do
     unless tags[:async] do
-      Ecto.Adapters.SQL.restart_test_transaction(Todo.Repo, [])
+      :ok = Ecto.Adapters.SQL.Sandbox.checkout(Todo.Repo)
     end
 
-    {:ok, conn: Phoenix.ConnTest.conn()}
+    {:ok, conn: Phoenix.ConnTest.build_conn()}
   end
 end

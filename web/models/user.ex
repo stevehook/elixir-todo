@@ -1,5 +1,6 @@
 defmodule Todo.User do
   use Todo.Web, :model
+  use Ecto.Schema
 
   schema "users" do
     field :name, :string
@@ -7,6 +8,8 @@ defmodule Todo.User do
     field :password, :string
     field :deleted, :boolean, default: false
     field :last_logged_in_at, Ecto.DateTime
+
+    many_to_many :projects, Todo.Project, join_through: "users_projects"
 
     timestamps
   end
@@ -29,7 +32,7 @@ defmodule Todo.User do
     def encode(user, _options) do
       user
       |> Map.from_struct
-      |> Map.drop([:__meta__, :__struct__])
+      |> Map.drop([:__meta__, :__struct__, :projects])
       |> Poison.encode!
     end
   end

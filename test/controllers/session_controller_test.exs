@@ -7,7 +7,7 @@ defmodule Todo.SessionControllerTest do
     create_user
     params = credentials_as_json("bob@example.com", "secret")
 
-    conn = conn
+    conn = build_conn
     |> put_req_header("content-type", "application/json")
     |> post("/api/sessions", params)
 
@@ -18,7 +18,7 @@ defmodule Todo.SessionControllerTest do
     create_user
     params = credentials_as_json("bob@example.com", "wrong")
 
-    conn = conn
+    conn = build_conn
     |> put_req_header("content-type", "application/json")
     |> post("/api/sessions", params)
 
@@ -29,7 +29,7 @@ defmodule Todo.SessionControllerTest do
     create_user
     params = credentials_as_json("alice@example.com", "secret")
 
-    conn = conn
+    conn = build_conn
     |> put_req_header("content-type", "application/json")
     |> post("/api/sessions", params)
 
@@ -45,7 +45,7 @@ defmodule Todo.SessionControllerTest do
   end
 
   test "DELETE /api/session must be authenticated" do
-    conn = conn
+    conn = build_conn
     |> put_req_header("content-type", "application/json")
     |> delete("/api/session")
 
@@ -57,7 +57,7 @@ defmodule Todo.SessionControllerTest do
 
     jwt = login_and_get_jwt
 
-    conn = conn
+    conn = build_conn
     |> put_req_header("authorization", jwt)
     |> put_req_header("content-type", "application/json")
     |> get("/api/session")
@@ -72,7 +72,7 @@ defmodule Todo.SessionControllerTest do
   test "GET /api/session fails with 422 when the JWT auth header is missing" do
     create_user
 
-    conn = conn
+    conn = build_conn
     |> put_req_header("authorization", "this is not the token you are looking for")
     |> put_req_header("content-type", "application/json")
     |> get("/api/session")
@@ -81,7 +81,7 @@ defmodule Todo.SessionControllerTest do
   end
 
   test "GET /api/session fails with 422 when there is no session" do
-    conn = conn
+    conn = build_conn
     |> put_req_header("content-type", "application/json")
     |> get("/api/session")
 

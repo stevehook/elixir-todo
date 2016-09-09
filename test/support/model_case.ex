@@ -25,7 +25,7 @@ defmodule Todo.ModelCase do
 
   setup tags do
     unless tags[:async] do
-      Ecto.Adapters.SQL.restart_test_transaction(Todo.Repo, [])
+      :ok = Ecto.Adapters.SQL.Sandbox.checkout(Todo.Repo)
     end
 
     :ok
