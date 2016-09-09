@@ -46,7 +46,7 @@ defmodule Todo.TaskControllerTest do
   end
 
   def new_task_as_json do
-    task_as_json = %{ "task" => %Task{title: "Walk the dog"} }
+    %{ "task" => %Task{title: "Walk the dog"} }
     |> Poison.encode!()
   end
 
@@ -123,7 +123,7 @@ defmodule Todo.TaskControllerTest do
       assert response(conn, 422)
     end
 
-    test "returns 404 for a missing project", %{user: user, project: project, task: task} do
+    test "returns 404 for a missing project", %{user: user, project: project} do
       task_as_json = new_task_as_json
 
       conn = authenticated_conn(user)

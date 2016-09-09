@@ -49,18 +49,25 @@ defmodule Todo.TaskController do
     end
   end
 
-  def create(conn, %{"task" => task_params}) do
-    changeset = Task.changeset(%Task{}, task_params)
-    case Repo.insert(changeset) do
-      {:ok, task} ->
+  def create(conn, %{"project_id" => project_id, "task" => task_params}) do
+    case load_project(project_id, conn) do
+      nil ->
         conn
-        |> put_status(201)
-        |> json(task)
-      {:error, changeset} ->
-        errors = errors_for_json(changeset.errors)
-        conn
-        |> put_status(422)
-        |> json(%{ "errors" => errors })
+        |> put_status(404)
+        |> json(%{})
+      project ->
+        changeset = Task.changeset(%Task{}, task_params)
+        case Repo.insert(changeset) do
+          {:ok, task} ->
+            conn
+            |> put_status(201)
+            |> json(task)
+          {:error, changeset} ->
+            errors = errors_for_json(changeset.errors)
+            conn
+            |> put_status(422)
+            |> json(%{ "errors" => errors })
+        end
     end
   end
 
