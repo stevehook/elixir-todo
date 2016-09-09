@@ -45,6 +45,11 @@ defmodule Todo.TaskControllerTest do
     |> Poison.encode!
   end
 
+  def new_task_as_json do
+    task_as_json = %{ "task" => %Task{title: "Walk the dog"} }
+    |> Poison.encode!()
+  end
+
   def task_as_json_list(task) do
     task
     |> List.wrap
@@ -99,8 +104,7 @@ defmodule Todo.TaskControllerTest do
 
   describe "POST /api/projects/:project_id/tasks" do
     test "creates a new task", %{user: user, project: project} do
-      task_as_json = %{ "task" => %Task{title: "Walk the dog"} }
-      |> Poison.encode!()
+      task_as_json = new_task_as_json
 
       conn = authenticated_conn(user)
       |> put_req_header("content-type", "application/json")
@@ -110,14 +114,23 @@ defmodule Todo.TaskControllerTest do
     end
 
     test "requires authenication", %{project: project} do
-      task_as_json = %{ "task" => %Task{title: "Walk the dog"} }
-      |> Poison.encode!()
+      task_as_json = new_task_as_json
 
       conn = build_conn
       |> put_req_header("content-type", "application/json")
       |> post("/api/projects/#{project.id}/tasks", task_as_json)
 
       assert response(conn, 422)
+    end
+
+    test "returns 404 for a missing project", %{user: user, project: project, task: task} do
+      task_as_json = new_task_as_json
+
+      conn = authenticated_conn(user)
+      |> put_req_header("content-type", "application/json")
+      |> post("/api/projects/#{project.id + 10}/tasks", task_as_json)
+
+      assert response(conn, 404)
     end
   end
 
