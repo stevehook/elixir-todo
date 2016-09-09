@@ -226,15 +226,39 @@ defmodule Todo.TaskControllerTest do
     end
   end
 
-  # test "PATCH /api/tasks/:id/complete marks an existing task as completed" do
-  #   task = create_task
+  describe "PATCH /api/tasks/:id/complete" do
+    test "marks an existing task as completed", %{user: user, project: project, task: task} do
+      conn = authenticated_conn(user)
+      |> put_req_header("content-type", "application/json")
+      |> patch("/api/projects/#{project.id}/tasks/#{task.id}/complete")
 
-  #   conn = authenticated_conn
-  #   |> put_req_header("content-type", "application/json")
-  #   |> patch("/api/tasks/#{task.id}/complete")
+      assert %{ "completed" => true } = json_response(conn, 200)
+      task = Repo.get!(Task, task.id)
+      assert task.completed == true
+    end
 
-  #   assert %{ "title" => "Walk the dog", "completed" => true } = json_response(conn, 200)
-  #   task = Repo.get!(Task, task.id)
-  #   assert task.completed == true
-  # end
+    test "requires authentication", %{project: project, task: task} do
+      conn = build_conn
+      |> put_req_header("content-type", "application/json")
+      |> patch("/api/projects/#{project.id}/tasks/#{task.id}/complete")
+
+      assert response(conn, 422)
+    end
+
+    test "returns 404 for a missing project", %{user: user, project: project, task: task} do
+      conn = authenticated_conn(user)
+      |> put_req_header("content-type", "application/json")
+      |> patch("/api/projects/#{project.id + 10}/tasks/#{task.id}/complete")
+
+      assert response(conn, 404)
+    end
+
+    test "returns 404 for a missing task", %{user: user, project: project, task: task} do
+      conn = authenticated_conn(user)
+      |> put_req_header("content-type", "application/json")
+      |> patch("/api/projects/#{project.id}/tasks/#{task.id + 10}/complete")
+
+      assert response(conn, 404)
+    end
+  end
 end

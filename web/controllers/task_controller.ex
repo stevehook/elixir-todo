@@ -100,19 +100,32 @@ defmodule Todo.TaskController do
     end
   end
 
-  def complete(conn, %{"id" => id}) do
-    task = Repo.get!(Task, id)
-    changeset = Task.changeset(task, %{"completed" => true})
-    case Repo.update(changeset) do
-      {:ok, task} ->
+  def complete(conn, %{"project_id" => project_id, "id" => id}) do
+    case load_project(project_id, conn) do
+      nil ->
         conn
-        |> put_status(200)
-        |> json(task)
-      {:error, changeset} ->
-        errors = errors_for_json(changeset.errors)
-        conn
-        |> put_status(422)
-        |> json(%{ "errors" => errors })
+        |> put_status(404)
+        |> json(%{})
+      project ->
+        case Repo.get_by(Task, %{id: id, project_id: project.id}) do
+          nil ->
+            conn
+            |> put_status(404)
+            |> json(%{})
+          task ->
+            changeset = Task.changeset(task, %{"completed" => true})
+            case Repo.update(changeset) do
+              {:ok, task} ->
+                conn
+                |> put_status(200)
+                |> json(task)
+              {:error, changeset} ->
+                errors = errors_for_json(changeset.errors)
+                conn
+                |> put_status(422)
+                |> json(%{ "errors" => errors })
+            end
+        end
     end
   end
 

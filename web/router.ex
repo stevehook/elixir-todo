@@ -28,8 +28,8 @@ defmodule Todo.Router do
     pipe_through :api
     resources "/projects", ProjectController do
       resources "/tasks", TaskController
+      patch "/tasks/:id/complete", TaskController, :complete
     end
-    patch "/tasks/:id/complete", TaskController, :complete
     resources "/sessions", SessionController, only: [:create]
     delete "/session", SessionController, :delete
     get "/session", SessionController, :show
