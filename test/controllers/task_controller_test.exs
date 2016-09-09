@@ -123,6 +123,18 @@ defmodule Todo.TaskControllerTest do
       assert response(conn, 422)
     end
 
+    test "fails with an error message if we try to create a new task without a title",
+        %{user: user, project: project} do
+      task_as_json = %{ "task" => %Task{} }
+      |> Poison.encode!()
+
+      conn = authenticated_conn(user)
+      |> put_req_header("content-type", "application/json")
+      |> post("/api/projects/#{project.id}/tasks", task_as_json)
+
+      assert %{ "errors" => %{ "title" => "can't be blank" } } = json_response(conn, 422)
+    end
+
     test "returns 404 for a missing project", %{user: user, project: project} do
       task_as_json = new_task_as_json
 
@@ -134,40 +146,49 @@ defmodule Todo.TaskControllerTest do
     end
   end
 
-  # test "POST /api/tasks fails with an error message if we try to create a new task without a title" do
-  #   task_as_json = %{ "task" => %Task{} }
-  #   |> Poison.encode!()
+  describe "PATCH /api/projects/:project_id/tasks/:id" do
+    test "updates an existing task", %{user: user, project: project, task: task} do
+      task_as_json = %{ "task" => %{title: "Wash the car"} }
 
-  #   # IO.puts task_as_json
-  #   conn = authenticated_conn
-  #   |> put_req_header("content-type", "application/json")
-  #   |> post("/api/tasks", task_as_json)
+      conn = authenticated_conn(user)
+      |> put_req_header("content-type", "application/json")
+      |> patch("/api/projects/#{project.id}/tasks/#{task.id}", task_as_json)
 
-  #   assert %{ "errors" => %{ "title" => "can't be blank" } } = json_response(conn, 422)
-  # end
+      assert %{ "title" => "Wash the car" } = json_response(conn, 200)
+      task = Repo.get!(Task, task.id)
+      assert task.title == "Wash the car"
+    end
 
-  # test "PATCH /api/tasks/:id updates an existing task" do
-  #   task = create_task
-  #   task_as_json = %{ "task" => %{title: "Wash the car"} }
-  #   conn = authenticated_conn
-  #   |> put_req_header("content-type", "application/json")
-  #   |> patch("/api/tasks/#{task.id}", task_as_json)
+    test "requires authentication", %{user: user, project: project, task: task} do
+      task_as_json = %{ "task" => %{title: "Wash the car"} }
 
-  #   assert %{ "title" => "Wash the car" } = json_response(conn, 200)
-  #   task = Repo.get!(Task, task.id)
-  #   assert task.title == "Wash the car"
-  # end
+      conn = build_conn
+      |> put_req_header("content-type", "application/json")
+      |> patch("/api/projects/#{project.id}/tasks/#{task.id}", task_as_json)
 
-  # test "PATCH /api/tasks/:id requires authentication" do
-  #   task = create_task
-  #   task_as_json = %{ "task" => %{title: "Wash the car"} }
+      assert response(conn, 422)
+    end
 
-  #   conn = build_conn
-  #   |> put_req_header("content-type", "application/json")
-  #   |> patch("/api/tasks/#{task.id}", task_as_json)
+    test "returns 404 for a missing project", %{user: user, project: project, task: task} do
+      task_as_json = new_task_as_json
 
-  #   assert response(conn, 422)
-  # end
+      conn = authenticated_conn(user)
+      |> put_req_header("content-type", "application/json")
+      |> patch("/api/projects/#{project.id + 10}/tasks/#{task.id}", task_as_json)
+
+      assert response(conn, 404)
+    end
+
+    test "returns 404 for a missing task", %{user: user, project: project, task: task} do
+      task_as_json = new_task_as_json
+
+      conn = authenticated_conn(user)
+      |> put_req_header("content-type", "application/json")
+      |> patch("/api/projects/#{project.id}/tasks/#{task.id + 10}", task_as_json)
+
+      assert response(conn, 404)
+    end
+  end
 
   # test "DELETE /api/tasks/:id deletes an existing task" do
   #   task = create_task
