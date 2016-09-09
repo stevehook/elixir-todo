@@ -97,27 +97,29 @@ defmodule Todo.TaskControllerTest do
     end
   end
 
-  # test "POST /api/tasks creates a new task" do
-  #   task_as_json = %{ "task" => %Task{title: "Walk the dog"} }
-  #   |> Poison.encode!()
+  describe "POST /api/projects/:project_id/tasks" do
+    test "creates a new task", %{user: user, project: project} do
+      task_as_json = %{ "task" => %Task{title: "Walk the dog"} }
+      |> Poison.encode!()
 
-  #   conn = authenticated_conn
-  #   |> put_req_header("content-type", "application/json")
-  #   |> post("/api/tasks", task_as_json)
+      conn = authenticated_conn(user)
+      |> put_req_header("content-type", "application/json")
+      |> post("/api/projects/#{project.id}/tasks", task_as_json)
 
-  #   assert %{ "title" => "Walk the dog" } = json_response(conn, 201)
-  # end
+      assert %{ "title" => "Walk the dog" } = json_response(conn, 201)
+    end
 
-  # test "POST /api/tasks requires authenication" do
-  #   task_as_json = %{ "task" => %Task{title: "Walk the dog"} }
-  #   |> Poison.encode!()
+    test "requires authenication", %{project: project} do
+      task_as_json = %{ "task" => %Task{title: "Walk the dog"} }
+      |> Poison.encode!()
 
-  #   conn = build_conn
-  #   |> put_req_header("content-type", "application/json")
-  #   |> post("/api/tasks", task_as_json)
+      conn = build_conn
+      |> put_req_header("content-type", "application/json")
+      |> post("/api/projects/#{project.id}/tasks", task_as_json)
 
-  #   assert response(conn, 422)
-  # end
+      assert response(conn, 422)
+    end
+  end
 
   # test "POST /api/tasks fails with an error message if we try to create a new task without a title" do
   #   task_as_json = %{ "task" => %Task{} }
