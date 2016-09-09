@@ -190,27 +190,41 @@ defmodule Todo.TaskControllerTest do
     end
   end
 
-  # test "DELETE /api/tasks/:id deletes an existing task" do
-  #   task = create_task
+  describe "DELETE /api/tasks/:id" do
+    test "deletes an existing task", %{user: user, project: project, task: task} do
+      conn = authenticated_conn(user)
+      |> put_req_header("content-type", "application/json")
+      |> delete("/api/projects/#{project.id}/tasks/#{task.id}")
 
-  #   conn = authenticated_conn
-  #   |> put_req_header("content-type", "application/json")
-  #   |> delete("/api/tasks/#{task.id}")
+      assert json_response(conn, 200)
+      task = Repo.get(Task, task.id)
+      assert task == nil
+    end
 
-  #   assert json_response(conn, 200)
-  #   task = Repo.get(Task, task.id)
-  #   assert task == nil
-  # end
+    test "requires authentication", %{project: project, task: task} do
+      conn = build_conn
+      |> put_req_header("content-type", "application/json")
+      |> delete("/api/projects/#{project.id}/tasks/#{task.id}")
 
-  # test "DELETE /api/tasks/:id requires authentication" do
-  #   task = create_task
+      assert response(conn, 422)
+    end
 
-  #   conn = build_conn
-  #   |> put_req_header("content-type", "application/json")
-  #   |> delete("/api/tasks/#{task.id}")
+    test "returns 404 for a missing project", %{user: user, project: project, task: task} do
+      conn = authenticated_conn(user)
+      |> put_req_header("content-type", "application/json")
+      |> delete("/api/projects/#{project.id + 10}/tasks/#{task.id}")
 
-  #   assert response(conn, 422)
-  # end
+      assert response(conn, 404)
+    end
+
+    test "returns 404 for a missing task", %{user: user, project: project, task: task} do
+      conn = authenticated_conn(user)
+      |> put_req_header("content-type", "application/json")
+      |> delete("/api/projects/#{project.id}/tasks/#{task.id + 10}")
+
+      assert response(conn, 404)
+    end
+  end
 
   # test "PATCH /api/tasks/:id/complete marks an existing task as completed" do
   #   task = create_task
