@@ -4,14 +4,20 @@ defmodule Todo.SessionControllerTest do
   alias Todo.Repo
 
   test "POST /api/sessions creates a new session given valid credentials" do
-    create_user
+    user = create_user
     params = credentials_as_json("bob@example.com", "secret")
+
+    expected = user
+    |> Poison.encode!
+    |> Poison.decode!
 
     conn = build_conn
     |> put_req_header("content-type", "application/json")
     |> post("/api/sessions", params)
 
-    assert json_response(conn, 201)
+    response = json_response(conn, 201)
+    assert response["user"] == expected
+    assert response["jwt"]
   end
 
   test "POST /api/sessions does NOT create a new session given invalid password" do
@@ -62,7 +68,7 @@ defmodule Todo.SessionControllerTest do
     |> put_req_header("content-type", "application/json")
     |> get("/api/session")
 
-    expected = user
+    expected = %{"user" => user, "jwt" => jwt}
     |> Poison.encode!
     |> Poison.decode!
 

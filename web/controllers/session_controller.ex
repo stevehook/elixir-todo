@@ -9,10 +9,16 @@ defmodule Todo.SessionController do
   def create(conn, %{"user" => %{"email" => email, "password" => password}}) do
     case authenticate(email, password) do
       {:ok, user} ->
-        conn
+        new_conn = Guardian.Plug.api_sign_in(conn, user)
+        jwt = Guardian.Plug.current_token(new_conn)
+        {:ok, claims} = Guardian.Plug.claims(new_conn)
+        exp = Map.get(claims, "exp")
+
+        new_conn
         |> put_status(201)
-        |> Guardian.Plug.sign_in(user)
-        |> json(user)
+        |> put_resp_header("authorization", "Bearer #{jwt}")
+        |> put_resp_header("x-expires", to_string(exp))
+        |> json(%{ "user" => Guardian.Plug.current_resource(new_conn), "jwt" => jwt })
       {:error, errors} ->
         conn
         |> put_status(422)
@@ -30,7 +36,8 @@ defmodule Todo.SessionController do
   def show(conn, _params) do
     conn
     |> put_status(200)
-    |> json(Guardian.Plug.current_resource(conn))
+    |> json(%{ "user" => Guardian.Plug.current_resource(conn),
+               "jwt" => Guardian.Plug.current_token(conn) })
   end
 
   def unauthenticated(conn, _params) do
@@ -41,7 +48,7 @@ defmodule Todo.SessionController do
 
   defp authenticate(email, password) do
     case Repo.get_by(User, email: email, password: password) do
-      nil -> {:error, 'Login failed'}
+      nil -> {:error, "Login failed"}
       user -> {:ok, user}
     end
   end
