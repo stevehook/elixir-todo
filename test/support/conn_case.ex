@@ -53,7 +53,7 @@ defmodule Todo.ConnCase do
         jwt = login_and_get_jwt
 
         conn = build_conn
-        |> put_req_header("authorization", jwt)
+        |> put_req_header("authorization", "Bearer #{jwt}")
         |> put_req_header("content-type", "application/json")
       end
     end
