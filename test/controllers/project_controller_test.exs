@@ -58,28 +58,28 @@ defmodule Todo.ProjectControllerTest do
       user = create_user
       project = create_project("My project", user)
       project_as_json = project |> Poison.encode!
-      conn = get authenticated_conn(user), "/api/project/#{project.id}"
+      conn = get authenticated_conn(user), "/api/projects/#{project.id}"
       assert response(conn, 200) == project_as_json
     end
 
     test "returns 422 if not authenticated" do
       user = create_user
       project = create_project("My project", user)
-      conn = get conn, "/api/project/#{project.id}"
+      conn = get conn, "/api/projects/#{project.id}"
       assert response(conn, 422)
     end
 
     test "returns 404 if project missing" do
       user = create_user
       project = create_project("My project", user)
-      conn = get authenticated_conn(user), "/api/project/#{project.id + 10}"
+      conn = get authenticated_conn(user), "/api/projects/#{project.id + 10}"
       assert response(conn, 404)
     end
 
     test "returns 404 if user is not a member of the project" do
       user = create_user
-      project = create_project("My project", user)
-      conn = get authenticated_conn(user), "/api/project/#{project.id}"
+      project = create_project("My project")
+      conn = get authenticated_conn(user), "/api/projects/#{project.id}"
       assert response(conn, 404)
     end
   end
