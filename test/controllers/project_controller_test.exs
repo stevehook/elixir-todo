@@ -51,6 +51,17 @@ defmodule Todo.ProjectControllerTest do
   end
 
   describe "POST /api/projects" do
+    test "creates a new project for the current user" do
+      user = create_user
+
+      project_as_json = %{"project" => %Project{name: "My project"}} |> Poison.encode!
+      conn = authenticated_conn(user)
+      |> put_req_header("content-type", "application/json")
+      |> post("/api/projects", project_as_json)
+
+      assert %{ "name" => "My project" } = json_response(conn, 201)
+      #TODO: assert that current user is a member of the project team
+    end
   end
 
   describe "GET /api/projects/:id" do

@@ -31,6 +31,27 @@ defmodule Todo.ProjectController do
     end
   end
 
+  def create(conn, %{"project" => project_params}) do
+    changeset = Project.changeset(%Project{}, project_params)
+    case Repo.insert(changeset) do
+      {:ok, project} ->
+        conn
+        |> put_status(201)
+        |> json(project)
+      {:error, changeset} ->
+        errors = errors_for_json(changeset.errors)
+        conn
+        |> put_status(422)
+        |> json(%{ "errors" => errors })
+    end
+  end
+
+  defp errors_for_json(errors) do
+    keyword_list = Enum.map(errors,
+      fn {field, detail} -> { field, elem(detail, 0) } end)
+    Enum.into(keyword_list, %{})
+  end
+
   defp load_project(project_id, conn) do
     user = Guardian.Plug.current_resource(conn)
     query = from t in Project,
