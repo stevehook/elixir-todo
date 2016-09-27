@@ -32,7 +32,9 @@ defmodule Todo.ProjectController do
   end
 
   def create(conn, %{"project" => project_params}) do
+    user = Guardian.Plug.current_resource(conn)
     changeset = Project.changeset(%Project{}, project_params)
+      |> Ecto.Changeset.put_assoc(:users, [user])
     case Repo.insert(changeset) do
       {:ok, project} ->
         conn
