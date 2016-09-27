@@ -59,8 +59,10 @@ defmodule Todo.ProjectControllerTest do
       |> put_req_header("content-type", "application/json")
       |> post("/api/projects", project_as_json)
 
-      assert %{ "name" => "My project" } = json_response(conn, 201)
-      #TODO: assert that current user is a member of the project team
+      assert %{ "id" => project_id, "name" => "My project" } = json_response(conn, 201)
+
+      project = Repo.get!(Project, project_id) |> Repo.preload(:users)
+      assert Enum.count(project.users) == 1
     end
   end
 
@@ -76,7 +78,7 @@ defmodule Todo.ProjectControllerTest do
     test "returns 422 if not authenticated" do
       user = create_user
       project = create_project("My project", user)
-      conn = get conn, "/api/projects/#{project.id}"
+      conn = get build_conn, "/api/projects/#{project.id}"
       assert response(conn, 422)
     end
 
