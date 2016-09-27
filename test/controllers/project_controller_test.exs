@@ -64,6 +64,28 @@ defmodule Todo.ProjectControllerTest do
       project = Repo.get!(Project, project_id) |> Repo.preload(:users)
       assert Enum.count(project.users) == 1
     end
+
+    test "returns 422 if not authenticated" do
+      user = create_user
+
+      project_as_json = %{"project" => %Project{name: "My project"}} |> Poison.encode!
+      conn = build_conn
+      |> put_req_header("content-type", "application/json")
+      |> post("/api/projects", project_as_json)
+
+      assert response(conn, 422)
+    end
+
+    test "returns 422 if inputs are invalid" do
+      user = create_user
+
+      project_as_json = %{"project" => %Project{}} |> Poison.encode!
+      conn = authenticated_conn(user)
+      |> put_req_header("content-type", "application/json")
+      |> post("/api/projects", project_as_json)
+
+      assert response(conn, 422)
+    end
   end
 
   describe "GET /api/projects/:id" do
