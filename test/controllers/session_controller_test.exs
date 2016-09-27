@@ -55,7 +55,7 @@ defmodule Todo.SessionControllerTest do
     |> put_req_header("content-type", "application/json")
     |> delete("/api/session")
 
-    assert json_response(conn, 422)
+    assert json_response(conn, 401)
   end
 
   test "GET /api/session fetches an existing session" do
@@ -75,7 +75,7 @@ defmodule Todo.SessionControllerTest do
     assert json_response(conn, 200) == expected
   end
 
-  test "GET /api/session fails with 422 when the JWT auth header is missing" do
+  test "GET /api/session fails with 401 when the JWT auth header is missing" do
     create_user
 
     conn = build_conn
@@ -83,14 +83,14 @@ defmodule Todo.SessionControllerTest do
     |> put_req_header("content-type", "application/json")
     |> get("/api/session")
 
-    assert json_response(conn, 422)
+    assert json_response(conn, 401)
   end
 
-  test "GET /api/session fails with 422 when there is no session" do
+  test "GET /api/session fails with 401 when there is no session" do
     conn = build_conn
     |> put_req_header("content-type", "application/json")
     |> get("/api/session")
 
-    assert json_response(conn, 422)
+    assert json_response(conn, 401)
   end
 end

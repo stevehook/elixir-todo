@@ -65,7 +65,7 @@ defmodule Todo.TaskControllerTest do
 
     test "requires authentication", %{project: project} do
       conn = get build_conn, "/api/projects/#{project.id}/tasks"
-      assert response(conn, 422)
+      assert response(conn, 401)
     end
 
     test "returns 404 for a non-existent project", %{user: user, project: project} do
@@ -120,7 +120,7 @@ defmodule Todo.TaskControllerTest do
       |> put_req_header("content-type", "application/json")
       |> post("/api/projects/#{project.id}/tasks", task_as_json)
 
-      assert response(conn, 422)
+      assert response(conn, 401)
     end
 
     test "fails with an error message if we try to create a new task without a title",
@@ -166,7 +166,7 @@ defmodule Todo.TaskControllerTest do
       |> put_req_header("content-type", "application/json")
       |> patch("/api/projects/#{project.id}/tasks/#{task.id}", task_as_json)
 
-      assert response(conn, 422)
+      assert response(conn, 401)
     end
 
     test "returns 404 for a missing project", %{user: user, project: project, task: task} do
@@ -206,7 +206,7 @@ defmodule Todo.TaskControllerTest do
       |> put_req_header("content-type", "application/json")
       |> delete("/api/projects/#{project.id}/tasks/#{task.id}")
 
-      assert response(conn, 422)
+      assert response(conn, 401)
     end
 
     test "returns 404 for a missing project", %{user: user, project: project, task: task} do
@@ -242,7 +242,7 @@ defmodule Todo.TaskControllerTest do
       |> put_req_header("content-type", "application/json")
       |> patch("/api/projects/#{project.id}/tasks/#{task.id}/complete")
 
-      assert response(conn, 422)
+      assert response(conn, 401)
     end
 
     test "returns 404 for a missing project", %{user: user, project: project, task: task} do

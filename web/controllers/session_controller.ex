@@ -42,7 +42,7 @@ defmodule Todo.SessionController do
 
   def unauthenticated(conn, _params) do
     conn
-    |> put_status(422)
+    |> put_status(401)
     |> json(%{})
   end
 
