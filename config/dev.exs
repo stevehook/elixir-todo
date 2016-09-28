@@ -7,7 +7,7 @@ use Mix.Config
 # watchers to your application. For example, we use it
 # with brunch.io to recompile .js and .css sources.
 config :todo, Todo.Endpoint,
-  http: [port: 4001],
+  http: [port: 4000],
   debug_errors: true,
   code_reloader: true,
   cache_static_lookup: false,
@@ -36,8 +36,8 @@ config :phoenix, :stacktrace_depth, 20
 # Configure your database
 config :todo, Todo.Repo,
   adapter: Ecto.Adapters.Postgres,
-  username: "stevehook",
-  password: "",
+  username: "postgres",
+  password: "postgres",
   database: "todo_dev",
-  hostname: "localhost",
+  hostname: "db",
   pool_size: 10
