@@ -118,6 +118,57 @@ defmodule Todo.ProjectControllerTest do
   end
 
   describe "PATCH /api/projects/:id" do
+    test "updates an existing project" do
+      user = create_user
+      project = create_project("My project", user)
+
+      project_as_json = %{"project" => %Project{name: "My renamed project"}} |> Poison.encode!
+      conn = authenticated_conn(user)
+      |> put_req_header("content-type", "application/json")
+      |> patch("/api/projects/#{project.id}", project_as_json)
+
+      project_id = project.id
+      assert %{ "id" => ^project_id, "name" => "My renamed project" } = json_response(conn, 200)
+
+      project = Repo.get!(Project, project_id)
+      assert project.name == "My renamed project"
+    end
+
+    test "returns 401 if not authenticated" do
+      user = create_user
+      project = create_project("My project", user)
+
+      project_as_json = %{"project" => %Project{name: "My renamed project"}} |> Poison.encode!
+      conn = build_conn
+      |> put_req_header("content-type", "application/json")
+      |> patch("/api/projects/#{project.id}", project_as_json)
+
+      assert response(conn, 401)
+    end
+
+    test "returns 404 if project missing" do
+      user = create_user
+      project = create_project("My project", user)
+
+      project_as_json = %{"project" => %Project{name: "My renamed project"}} |> Poison.encode!
+      conn = authenticated_conn(user)
+      |> put_req_header("content-type", "application/json")
+      |> patch("/api/projects/#{project.id + 10}", project_as_json)
+
+      assert response(conn, 404)
+    end
+
+    test "returns 404 if user is not a member of the project" do
+      user = create_user
+      project = create_project("My project")
+
+      project_as_json = %{"project" => %Project{name: "My renamed project"}} |> Poison.encode!
+      conn = authenticated_conn(user)
+      |> put_req_header("content-type", "application/json")
+      |> patch("/api/projects/#{project.id}", project_as_json)
+
+      assert response(conn, 404)
+    end
   end
 
   describe "DELETE /api/projects/:id" do

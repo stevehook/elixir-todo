@@ -48,6 +48,28 @@ defmodule Todo.ProjectController do
     end
   end
 
+  def update(conn, %{"id" => id, "project" => project_params}) do
+    case load_project(id, conn) do
+      nil ->
+        conn
+        |> put_status(404)
+        |> json(%{})
+      project ->
+        changeset = Project.changeset(project, project_params)
+        case Repo.update(changeset) do
+          {:ok, project} ->
+            conn
+            |> put_status(200)
+            |> json(project)
+          {:error, changeset} ->
+            errors = errors_for_json(changeset.errors)
+            conn
+            |> put_status(422)
+            |> json(%{ "errors" => errors })
+        end
+    end
+  end
+
   defp errors_for_json(errors) do
     keyword_list = Enum.map(errors,
       fn {field, detail} -> { field, elem(detail, 0) } end)
