@@ -39,5 +39,5 @@ config :todo, Todo.Repo,
   username: "postgres",
   password: "postgres",
   database: "todo_dev",
-  hostname: "db",
+  hostname: System.get_env("POSTGRES_HOST") || "localhost",
   pool_size: 10
