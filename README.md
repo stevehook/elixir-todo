@@ -1,11 +1,11 @@
 # Todo
 
-##Background
+## Background
 
 This is a simple Todo API implemented using the Phoenix Web framework
 and Elixir programming language. It's just a learning exercise.
 
-##To start the app
+## To start the application
 
   1. Install dependencies with `mix deps.get`
   2. Create and migrate your database with `mix ecto.create && mix ecto.migrate`
@@ -13,7 +13,7 @@ and Elixir programming language. It's just a learning exercise.
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
-##Docker
+## Docker
 
 A `Dockerfile` and `docker-compose.yml` can be used to run the
 development environment inside a docker container. Assuming you've got a

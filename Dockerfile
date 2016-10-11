@@ -12,8 +12,7 @@ ENV LC_ALL en_GB.UTF-8
 
 # Essential packages
 RUN apt-get -y update
-RUN apt-get -y install wget build-essential git
-RUN apt-get install -y -q nodejs
+RUN apt-get -y install wget build-essential git curl
 
 # Install Erlang
 RUN mkdir /tmp/erlang-build
@@ -28,7 +27,7 @@ RUN apt-get install elixir
 RUN mix local.hex --force
 RUN mix local.rebar --force
 RUN mix archive.install --force https://github.com/phoenixframework/archives/raw/master/phoenix_new.ez
-RUN curl -sL https://deb.nodesource.com/setup_6.x | bash -
+RUN curl -sL https://deb.nodesource.com/setup_6.x | bash - && apt-get install -y nodejs
 
 WORKDIR /app
 ADD . /app
