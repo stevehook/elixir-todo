@@ -34,3 +34,18 @@ study = Project.changeset(%Project{}, %{ name: "Study" })
   |> Repo.insert!
 
 
+Repo.insert!(%Task{ title: "Grocery shopping", completed: true, project_id: housework.id })
+Repo.insert!(%Task{ title: "Cook dinner", project_id: housework.id })
+Repo.insert!(%Task{ title: "Walk the dog", project_id: housework.id })
+Repo.insert!(%Task{ title: "Washing up", project_id: housework.id })
+Repo.insert!(%Task{ title: "Make the bed", project_id: housework.id })
+
+Repo.insert!(%Task{ title: "Fix the leaky tap", completed: true, project_id: diy.id })
+Repo.insert!(%Task{ title: "Paint the spare room", completed: true, project_id: diy.id })
+Repo.insert!(%Task{ title: "Put up the shelves", project_id: diy.id })
+
+Repo.insert!(%Task{ title: "Learn Ruby", completed: true, project_id: study.id })
+Repo.insert!(%Task{ title: "Learn Node.js", project_id: study.id })
+Repo.insert!(%Task{ title: "Learn Elixir", project_id: study.id })
+Repo.insert!(%Task{ title: "Learn Phoenix", project_id: study.id })
+
