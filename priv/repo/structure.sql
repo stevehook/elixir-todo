@@ -30,6 +30,18 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
+-- Name: projects; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE projects (
+    id integer NOT NULL,
+    name character varying(255) NOT NULL,
+    inserted_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
 -- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -53,7 +65,7 @@ CREATE TABLE tasks (
     user_id integer,
     inserted_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    team_id integer
+    project_id integer NOT NULL
 );
 
 
@@ -77,18 +89,6 @@ ALTER SEQUENCE tasks_id_seq OWNED BY tasks.id;
 
 
 --
--- Name: teams; Type: TABLE; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE TABLE teams (
-    id integer NOT NULL,
-    name character varying(255) NOT NULL,
-    inserted_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
-);
-
-
---
 -- Name: teams_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -104,7 +104,7 @@ CREATE SEQUENCE teams_id_seq
 -- Name: teams_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE teams_id_seq OWNED BY teams.id;
+ALTER SEQUENCE teams_id_seq OWNED BY projects.id;
 
 
 --
@@ -143,13 +143,13 @@ ALTER SEQUENCE users_id_seq OWNED BY users.id;
 
 
 --
--- Name: users_teams; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: users_projects; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
-CREATE TABLE users_teams (
+CREATE TABLE users_projects (
     id integer NOT NULL,
     user_id integer NOT NULL,
-    team_id integer NOT NULL,
+    project_id integer NOT NULL,
     inserted_at timestamp without time zone DEFAULT now() NOT NULL,
     updated_at timestamp without time zone DEFAULT now() NOT NULL
 );
@@ -171,7 +171,14 @@ CREATE SEQUENCE users_teams_id_seq
 -- Name: users_teams_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE users_teams_id_seq OWNED BY users_teams.id;
+ALTER SEQUENCE users_teams_id_seq OWNED BY users_projects.id;
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY projects ALTER COLUMN id SET DEFAULT nextval('teams_id_seq'::regclass);
 
 
 --
@@ -185,13 +192,6 @@ ALTER TABLE ONLY tasks ALTER COLUMN id SET DEFAULT nextval('tasks_id_seq'::regcl
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY teams ALTER COLUMN id SET DEFAULT nextval('teams_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY users ALTER COLUMN id SET DEFAULT nextval('users_id_seq'::regclass);
 
 
@@ -199,7 +199,7 @@ ALTER TABLE ONLY users ALTER COLUMN id SET DEFAULT nextval('users_id_seq'::regcl
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY users_teams ALTER COLUMN id SET DEFAULT nextval('users_teams_id_seq'::regclass);
+ALTER TABLE ONLY users_projects ALTER COLUMN id SET DEFAULT nextval('users_teams_id_seq'::regclass);
 
 
 --
@@ -222,7 +222,7 @@ ALTER TABLE ONLY tasks
 -- Name: teams_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
-ALTER TABLE ONLY teams
+ALTER TABLE ONLY projects
     ADD CONSTRAINT teams_pkey PRIMARY KEY (id);
 
 
@@ -238,37 +238,37 @@ ALTER TABLE ONLY users
 -- Name: users_teams_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
-ALTER TABLE ONLY users_teams
+ALTER TABLE ONLY users_projects
     ADD CONSTRAINT users_teams_pkey PRIMARY KEY (id);
 
 
 --
--- Name: tasks_team_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: tasks_project_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tasks
-    ADD CONSTRAINT tasks_team_id_fkey FOREIGN KEY (team_id) REFERENCES teams(id);
+    ADD CONSTRAINT tasks_project_id_fkey FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
 
 --
--- Name: users_teams_team_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: users_projects_project_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY users_teams
-    ADD CONSTRAINT users_teams_team_id_fkey FOREIGN KEY (team_id) REFERENCES teams(id);
+ALTER TABLE ONLY users_projects
+    ADD CONSTRAINT users_projects_project_id_fkey FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
 
 --
--- Name: users_teams_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: users_projects_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY users_teams
-    ADD CONSTRAINT users_teams_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id);
+ALTER TABLE ONLY users_projects
+    ADD CONSTRAINT users_projects_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
 
 
 --
 -- PostgreSQL database dump complete
 --
 
-INSERT INTO "schema_migrations" (version) VALUES (20160326235005), (20160327000314), (20160408234521), (20160711172740), (20160822210038), (20160828174342);
+INSERT INTO "schema_migrations" (version) VALUES (20160326235005), (20160327000314), (20160408234521), (20160711172740), (20160822210038), (20160828174342), (20160903161707), (20161105210952);
 

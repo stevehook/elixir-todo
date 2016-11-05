@@ -9,7 +9,7 @@ defmodule Todo.User do
     field :deleted, :boolean, default: false
     field :last_logged_in_at, Ecto.DateTime
 
-    many_to_many :projects, Todo.Project, join_through: "users_projects"
+    many_to_many :projects, Todo.Project, join_through: "users_projects", on_delete: :delete_all
 
     timestamps
   end

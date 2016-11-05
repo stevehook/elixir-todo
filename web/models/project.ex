@@ -4,8 +4,8 @@ defmodule Todo.Project do
 
   schema "projects" do
     field :name, :string
-    many_to_many :users, Todo.User, join_through: "users_projects"
-    has_many :tasks, Todo.Task
+    many_to_many :users, Todo.User, join_through: "users_projects", on_delete: :delete_all
+    has_many :tasks, Todo.Task, on_delete: :delete_all
     timestamps
   end
 
