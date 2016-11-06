@@ -48,4 +48,3 @@ Repo.insert!(%Task{ title: "Learn Ruby", completed: true, project_id: study.id }
 Repo.insert!(%Task{ title: "Learn Node.js", project_id: study.id })
 Repo.insert!(%Task{ title: "Learn Elixir", project_id: study.id })
 Repo.insert!(%Task{ title: "Learn Phoenix", project_id: study.id })
-

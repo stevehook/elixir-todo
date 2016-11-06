@@ -56,6 +56,14 @@ defmodule Todo.TaskControllerTest do
     |> Poison.encode!
   end
 
+  describe "GET /api/tasks" do
+    test "returns a list of all tasks", %{user: user, task: task} do
+      tasks_as_json = task_as_json_list(task)
+      conn = get authenticated_conn(user), "/api/tasks"
+      assert response(conn, 200) == tasks_as_json
+    end
+  end
+
   describe "GET /api/projects/:project_id/tasks" do
     test "returns a list of tasks", %{user: user, project: project, task: task} do
       tasks_as_json = task_as_json_list(task)
