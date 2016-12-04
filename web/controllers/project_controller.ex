@@ -8,8 +8,8 @@ defmodule Todo.ProjectController do
   def index(conn, _params) do
     user = Guardian.Plug.current_resource(conn)
 
-    query = from t in Project,
-      join: u in assoc(t, :users),
+    query = from p in Project,
+      join: u in assoc(p, :users),
       where: u.id == ^user.id
 
     projects = Repo.all(query)

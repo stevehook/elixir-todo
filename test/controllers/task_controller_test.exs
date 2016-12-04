@@ -269,4 +269,39 @@ defmodule Todo.TaskControllerTest do
       assert response(conn, 404)
     end
   end
+
+  describe "PATCH /api/tasks/:id/archive" do
+    test "marks an existing task as archived", %{user: user, project: project, task: task} do
+      conn = authenticated_conn(user)
+      |> put_req_header("content-type", "application/json")
+      |> patch("/api/projects/#{project.id}/tasks/#{task.id}/archive")
+
+      task = Repo.get!(Task, task.id)
+      assert task.archived_at != nil
+    end
+
+    test "requires authentication", %{project: project, task: task} do
+      conn = build_conn
+      |> put_req_header("content-type", "application/json")
+      |> patch("/api/projects/#{project.id}/tasks/#{task.id}/archive")
+
+      assert response(conn, 401)
+    end
+
+    test "returns 404 for a missing project", %{user: user, project: project, task: task} do
+      conn = authenticated_conn(user)
+      |> put_req_header("content-type", "application/json")
+      |> patch("/api/projects/#{project.id + 10}/tasks/#{task.id}/archive")
+
+      assert response(conn, 404)
+    end
+
+    test "returns 404 for a missing task", %{user: user, project: project, task: task} do
+      conn = authenticated_conn(user)
+      |> put_req_header("content-type", "application/json")
+      |> patch("/api/projects/#{project.id}/tasks/#{task.id + 10}/archive")
+
+      assert response(conn, 404)
+    end
+  end
 end

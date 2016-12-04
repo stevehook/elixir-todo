@@ -29,6 +29,7 @@ defmodule Todo.Router do
     resources "/projects", ProjectController do
       resources "/tasks", ProjectTaskController
       patch "/tasks/:id/complete", ProjectTaskController, :complete
+      patch "/tasks/:id/archive", ProjectTaskController, :archive
     end
     resources "/tasks", TaskController, only: [:index]
     resources "/sessions", SessionController, only: [:create]
