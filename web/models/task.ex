@@ -10,7 +10,7 @@ defmodule Todo.Task do
     belongs_to :user, Todo.User
     belongs_to :project, Todo.Project
 
-    timestamps
+    timestamps()
   end
 
   @required_fields ~w(title completed project_id)

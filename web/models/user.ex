@@ -11,7 +11,7 @@ defmodule Todo.User do
 
     many_to_many :projects, Todo.Project, join_through: "users_projects", on_delete: :delete_all
 
-    timestamps
+    timestamps()
   end
 
   @required_fields ~w(name email password deleted last_logged_in_at)

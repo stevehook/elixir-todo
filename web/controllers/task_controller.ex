@@ -1,7 +1,6 @@
 defmodule Todo.TaskController do
   use Todo.Web, :controller
   alias Todo.Repo
-  alias Todo.Project
   alias Todo.Task
 
   plug Guardian.Plug.EnsureAuthenticated, [handler: Todo.SessionController]
